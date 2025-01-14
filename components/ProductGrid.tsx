@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from 'react';
+import { CldImage } from 'next-cloudinary';
 import { products, categories } from '../data/products';
+import { useCart } from './CartContext';
 
 type Product = {
   id: number;
@@ -9,14 +11,16 @@ type Product = {
   description: string;
   price: number;
   category: string;
-  image: string;
+  imagePublicId: string;
   inStock: boolean;
+  
 }
 
 const ProductGrid = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<number>(1000);
   const [showInStock, setShowInStock] = useState<boolean>(false);
+  const { addToCart } = useCart();
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = !selectedCategory || product.category === selectedCategory;
@@ -41,7 +45,7 @@ const ProductGrid = () => {
               onChange={(e) => setSelectedCategory(e.target.value || null)}
               value={selectedCategory || ''}
             >
-              <option value="">All Categories</option>
+              <option value="">Todas las categorias</option>
               {categories.map(category => (
                 <option key={category} value={category}>
                   {category}
@@ -85,11 +89,15 @@ const ProductGrid = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProducts.map((product) => (
           <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-48 object-cover"
-            />
+            <div className="aspect-w-4 aspect-h-3">
+              <CldImage
+                width="400"
+                height="300"
+                src={product.imagePublicId}
+                alt={product.name}
+                className="object-cover w-full h-full"
+              />
+            </div>
             <div className="p-4">
               <h3 className="text-lg font-semibold">{product.name}</h3>
               <p className="text-gray-600 mt-2">{product.description}</p>
@@ -103,12 +111,26 @@ const ProductGrid = () => {
                   {product.inStock ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
+              <button
+                onClick={() => addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  quantity: 1
+                })}
+                className="mt-2 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         ))}
       </div>
+      
     </div>
+    
   );
+  
 };
 
 export default ProductGrid;

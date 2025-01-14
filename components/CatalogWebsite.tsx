@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import ProductGrid from './ProductGrid';
+import ContactForm from './ContactForm';
+import Cart from './Cart';
+
 
 const CatalogWebsite = () => {
   const [activeSection, setActiveSection] = useState('catalog');
@@ -18,35 +21,39 @@ const CatalogWebsite = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Cart /> 
       {/* Navigation */}
       <nav className="bg-white shadow-lg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
-            <div className="text-xl font-bold">Your Company</div>
+          <div className="flex items-center">
+            <img src="https://i.pinimg.com/474x/4b/74/b9/4b74b924245e42c470ba8b025f26499b.jpg" alt="TonersMAZ" className="w-8 h-8 mr-2" />
+            <div className="text-xl font-bold text-black">TMAZ Quality Toner</div>
+          </div>
             <div className="flex space-x-4">
               <button
                 onClick={() => setActiveSection('catalog')}
                 className={`px-3 py-2 rounded-md ${
-                  activeSection === 'catalog' ? 'bg-blue-500 text-white' : 'text-gray-600'
+                  activeSection === 'catalog' ? 'bg-slate-700 text-white' : 'text-gray-600'
                 }`}
               >
-                Catalog
+                Catalogo
               </button>
               <button
                 onClick={() => setActiveSection('testimonials')}
                 className={`px-3 py-2 rounded-md ${
-                  activeSection === 'testimonials' ? 'bg-blue-500 text-white' : 'text-gray-600'
+                  activeSection === 'testimonials' ? 'bg-slate-700 text-white' : 'text-gray-600'
                 }`}
               >
-                Testimonials
+                Testimonios
               </button>
               <button
                 onClick={() => setActiveSection('contact')}
                 className={`px-3 py-2 rounded-md ${
-                  activeSection === 'contact' ? 'bg-blue-500 text-white' : 'text-gray-600'
+                  activeSection === 'contact' ? 'bg-slate-700 text-white' : 'text-gray-600'
                 }`}
               >
-                Contact
+                Contacto
               </button>
             </div>
           </div>
@@ -58,7 +65,7 @@ const CatalogWebsite = () => {
         {/* Product Catalog */}
         {activeSection === 'catalog' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Our Products</h2>
+            <h2 className="text-2xl font-bold mb-6 text-black">Nuestros productos</h2>
             <ProductGrid />
           </div>
         )}
@@ -66,7 +73,7 @@ const CatalogWebsite = () => {
         {/* Testimonials */}
         {activeSection === 'testimonials' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Customer Testimonials</h2>
+            <h2 className="text-2xl font-bold mb-6 text-black">Testimonios</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {testimonials.map((testimonial) => (
                 <div key={testimonial.id} className="bg-white rounded-lg shadow-md p-6">
@@ -91,43 +98,7 @@ const CatalogWebsite = () => {
         )}
 
         {/* Contact Form */}
-        {activeSection === 'contact' && (
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Contact Us</h2>
-            <form className="space-y-4">
-              <div>
-                <label className="block text-gray-700 mb-2">Name</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Your name"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Email</label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 mb-2">Message</label>
-                <textarea
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={4}
-                  placeholder="Your message"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
-              >
-                Send Message
-              </button>
-            </form>
-          </div>
-        )}
+        {activeSection === 'contact' && <ContactForm />}
       </main>
 
       {/* Footer */}
@@ -135,17 +106,17 @@ const CatalogWebsite = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">About Us</h3>
-              <p className="text-gray-300">Your company description and mission statement.</p>
+              <h3 className="text-lg font-semibold mb- text-gray-50">Acerca de Nosotros</h3>
+              <p className="text-gray-400">Somos una empresa de tecnologia enfocada en ofrecer las soluciones de calidad mas altas.</p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
-              <p className="text-gray-300">Email: contact@example.com</p>
-              <p className="text-gray-300">Phone: (123) 456-7890</p>
+              <h3 className="text-lg font-semibold mb-4 text-white">Informacion de Contacto</h3>
+              <p className="text-gray-400">Email: serviciotecnicokonicaminolta@gmail.com</p>
+              <p className="text-gray-400">Phone: (57) 3147845883 </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Quality Certifications</h3>
-              <p className="text-gray-300">List your quality certifications here</p>
+              <h3 className="text-lg font-semibold mb-4 ">Certificaciones de calidad</h3>
+              <p className="text-gray-400">Composicion quimica del Toner</p>
             </div>
           </div>
         </div>
