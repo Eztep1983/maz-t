@@ -5,9 +5,13 @@ import ProductGrid from './ProductGrid';
 import ContactForm from './ContactForm';
 import Cart from './Cart';
 
-
 const CatalogWebsite = () => {
   const [activeSection, setActiveSection] = useState('catalog');
+
+  // Public ID de la imagen en Cloudinary
+  const cloudinaryBaseURL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
+  const publicId = "20_01_2025_04_39_57_p._m._yljtwi";
+  const imageUrl = `${cloudinaryBaseURL}/${publicId}`;
 
   // Sample testimonials
   const testimonials = [
@@ -21,15 +25,16 @@ const CatalogWebsite = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Cart /> 
+      <Cart />
       {/* Navigation */}
       <nav className="bg-white shadow-lg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <img src="https://i.pinimg.com/474x/4b/74/b9/4b74b924245e42c470ba8b025f26499b.jpg" alt="TonersMAZ" className="w-8 h-8 mr-2" />
-            <div className="text-xl font-bold text-black">TMAZ Quality Toner</div>
-          </div>
+            <div className="flex items-center">
+              {/* Usar la imagen de Cloudinary */}
+              <img src={imageUrl} alt="TonersMAZ" className="w-8 h-8 mr-2" />
+              <div className="text-xl font-bold text-black">TMAZ Quality Toner</div>
+            </div>
             <div className="flex space-x-4">
               <button
                 onClick={() => setActiveSection('catalog')}
@@ -62,15 +67,12 @@ const CatalogWebsite = () => {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Product Catalog */}
         {activeSection === 'catalog' && (
           <div>
             <h2 className="text-2xl font-bold mb-6 text-black">Nuestros productos</h2>
             <ProductGrid />
           </div>
         )}
-
-        {/* Testimonials */}
         {activeSection === 'testimonials' && (
           <div>
             <h2 className="text-2xl font-bold mb-6 text-black">Testimonios</h2>
@@ -96,8 +98,6 @@ const CatalogWebsite = () => {
             </div>
           </div>
         )}
-
-        {/* Contact Form */}
         {activeSection === 'contact' && <ContactForm />}
       </main>
 
@@ -107,16 +107,18 @@ const CatalogWebsite = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h3 className="text-lg font-semibold mb- text-gray-50">Acerca de Nosotros</h3>
-              <p className="text-gray-400">Somos una empresa de tecnologia enfocada en ofrecer las soluciones de calidad mas altas.</p>
+              <p className="text-gray-400">
+                Somos una empresa de tecnologia enfocada en ofrecer las soluciones de calidad más altas.
+              </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">Informacion de Contacto</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">Información de Contacto</h3>
               <p className="text-gray-400">Email: serviciotecnicokonicaminolta@gmail.com</p>
               <p className="text-gray-400">Phone: (57) 3147845883 </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4 ">Certificaciones de calidad</h3>
-              <p className="text-gray-400">Composicion quimica del Toner</p>
+              <p className="text-gray-400">Composición química del tóner</p>
             </div>
           </div>
         </div>
