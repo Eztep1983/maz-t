@@ -5,7 +5,7 @@ import { useCart } from './CartContext';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { items, removeFromCart, updateQuantity, cartTotal, itemCount } = useCart();
+  const { items, removeFromCart, updateQuantity, itemCount } = useCart();
 
   return (
     <div>
@@ -43,14 +43,13 @@ const Cart = () => {
             ) : (
               <>
                 <div className="space-y-4">
-                  {items.map((item: { id: number; name: string; price: number; quantity: number }) => (
+                  {items.map((item: { id: number; name: string; quantity: number }) => (
                     <div
                       key={item.id}
                       className="flex items-center justify-between border-b pb-4"
                     >
                       <div className="flex-1">
                         <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-gray-600">${item.price}</p>
                       </div>
                       
                       <div className="flex items-center space-x-4">
@@ -79,22 +78,6 @@ const Cart = () => {
                       </div>
                     </div>
                   ))}
-                </div>
-
-                <div className="mt-6 border-t pt-4">
-                  <div className="flex justify-between items-center text-lg font-bold">
-                    <span>Total:</span>
-                    <span>${cartTotal.toFixed(2)}</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      // Add checkout logic here
-                      alert('Proceeding to checkout...');
-                    }}
-                    className="w-full mt-4 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
-                  >
-                    Proceed to Checkout
-                  </button>
                 </div>
               </>
             )}

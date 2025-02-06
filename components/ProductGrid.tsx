@@ -24,9 +24,8 @@ const ProductGrid = () => {
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = !selectedCategory || product.category === selectedCategory;
-    const matchesPrice = product.price <= priceRange;
     const matchesStock = !showInStock || product.inStock;
-    return matchesCategory && matchesPrice && matchesStock;
+    return matchesCategory && matchesStock;
   });
 
   return (
@@ -52,21 +51,6 @@ const ProductGrid = () => {
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Price range filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Max Price: ${priceRange}
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="1000"
-              value={priceRange}
-              onChange={(e) => setPriceRange(Number(e.target.value))}
-              className="w-full"
-            />
           </div>
 
           {/* Stock filter */}
@@ -102,7 +86,6 @@ const ProductGrid = () => {
               <h3 className="text-lg font-semibold">{product.name}</h3>
               <p className="text-gray-600 mt-2">{product.description}</p>
               <div className="mt-2 flex justify-between items-center">
-                <p className="text-blue-600 font-bold">${product.price}</p>
                 <span className={`px-2 py-1 rounded text-sm ${
                   product.inStock 
                     ? 'bg-green-100 text-green-800'
@@ -115,12 +98,12 @@ const ProductGrid = () => {
                 onClick={() => addToCart({
                   id: product.id,
                   name: product.name,
-                  price: product.price,
-                  quantity: 1
+                  quantity: 1,
+                  price: 0
                 })}
                 className="mt-2 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
               >
-                Add to Cart
+                Añadir al carrito
               </button>
             </div>
           </div>
