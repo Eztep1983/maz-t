@@ -6,10 +6,25 @@ import { motion } from "framer-motion";
 import { fadeIn } from "@/utils/animations";
 import { FaShoppingCart, FaWhatsapp } from 'react-icons/fa';
 import { FaTrash } from 'react-icons/fa';
+import { FaEnvelope } from 'react-icons/fa';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { items, removeFromCart, updateQuantity, itemCount } = useCart();
+
+  // Función para enviar detalles del carrito por correo
+const sendToEmail = () => {
+  const emailAddress = "serviciotecnicokonikaminolta@gmail.com";  
+  const subject = "Consulta de productos";
+  const message = items
+    .map((item) => `${item.name} (x${item.quantity})`)
+    .join("\n");
+
+  const emailBody = `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`;
+
+  const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+  window.open(mailtoLink, "_blank");
+};
 
   // Función para enviar detalles del carrito a WhatsApp
   const sendToWhatsApp = () => {
@@ -112,6 +127,17 @@ const Cart = () => {
                 >
                   <FaWhatsapp className="mr-2" size={24} /> Consultar por WhatsApp
                 </motion.button>
+
+                {/* Botón de Gmail */}
+                <motion.button
+                  onClick={sendToEmail}
+                  className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all flex items-center justify-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FaEnvelope className="mr-2" size={24} /> Consultar por Gmail
+                </motion.button>
+
 
               </>
             )}
