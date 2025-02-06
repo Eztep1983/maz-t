@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductGrid from "./ProductGrid";
-import ContactForm from "./ContactForm";
+import ContactForm from "./ContactForm"
+import Productos from './Products';
 import Cart from "./Cart";
 import AboutUs from "./AboutUs";
 import { Menu, X } from "lucide-react";
@@ -14,7 +15,7 @@ const CatalogWebsite = () => {
 
   // Public ID de la imagen en Cloudinary
   const cloudinaryBaseURL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
-  const publicId = "20_01_2025_04_39_57_p._m._yljtwi";
+  const publicId = "company-items/logotipoTmaz";
   const imageUrl = `${cloudinaryBaseURL}/${publicId}`;
 
   // Sample testimonials
@@ -47,7 +48,7 @@ const CatalogWebsite = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                TMAZ 
+                TMAZ Quality Toner
               </motion.div>
             </div>
             
@@ -59,25 +60,29 @@ const CatalogWebsite = () => {
             </div>
             
             {/* Desktop Menu */}
-            <div className="hidden md:flex space-x-4">
-              {["catalog", "testimonials", "contact", "about"].map((section) => (
-                <motion.button
+            <div className="hidden md:flex space-x-4">{["catalog", "testimonials", "contact", "about", "product"].map((section) => (
+                <button
                   key={section}
-                  onClick={() => setActiveSection(section)}
+                  onClick={() => {
+                    setActiveSection(section);
+                    setMenuOpen(false);
+                  }}
                   className={`px-4 py-2 rounded-md transition-all duration-300 ${
                     activeSection === section ? "bg-slate-700 text-white shadow-md scale-105" : "text-gray-600 hover:bg-gray-200"
                   }`}
-                  whileHover={{ scale: 1.1 }}
                 >
-                  {section === "catalog"
-                    ? "Catálogo"
-                    : section === "testimonials"
-                    ? "Testimonios"
-                    : section === "contact"
-                    ? "Contacto"
-                    : "Sobre Nosotros"}
-                </motion.button>
+                    {section === "catalog"
+                      ? "Catálogo"
+                      : section === "testimonials"
+                      ? "Testimonios"
+                      : section === "contact"
+                      ? "Contacto"
+                      : section === "about"
+                      ? "Sobre Nosotros"
+                      : "Productos"}
+                </button>
               ))}
+
             </div>
           </div>
         </div>
@@ -85,7 +90,7 @@ const CatalogWebsite = () => {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="md:hidden bg-white shadow-lg py-4 flex flex-col items-center">
-            {["catalog", "testimonials", "contact", "about"].map((section) => (
+            {["catalog", "testimonials", "contact", "about", "product"].map((section) => (
               <button
                 key={section}
                 onClick={() => {
@@ -96,13 +101,15 @@ const CatalogWebsite = () => {
                   activeSection === section ? "bg-slate-700 text-white" : "text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                {section === "catalog"
-                  ? "Catálogo"
-                  : section === "testimonials"
-                  ? "Testimonios"
-                  : section === "contact"
-                  ? "Contacto"
-                  : "Sobre Nosotros"}
+                  {section === "catalog"
+                    ? "Catálogo"
+                    : section === "testimonials"
+                    ? "Testimonios"
+                    : section === "contact"
+                    ? "Contacto"
+                    : section === "about"
+                    ? "Sobre Nosotros"
+                    : "Productos"}
               </button>
             ))}
           </div>
@@ -163,6 +170,7 @@ const CatalogWebsite = () => {
 
           {activeSection === "contact" && <ContactForm key="contact" />}
           {activeSection === "about" && <AboutUs key="about" />}
+          {activeSection === "product" && <Productos key="product" />}
         </AnimatePresence>
       </main>
     </div>

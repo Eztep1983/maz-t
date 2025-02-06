@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useCart } from "./CartContext";
 import { motion } from "framer-motion";
 import { fadeIn } from "@/utils/animations";
+import { FaShoppingCart, FaWhatsapp } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,17 +27,24 @@ const Cart = () => {
   return (
     <div>
       {/* Botón de carrito */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed top-20 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all z-50"
-      >
-        🛒
-        {itemCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-            {itemCount}
-          </span>
-        )}
-      </button>
+      <motion.button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all z-50"
+          animate={{ y: [0, -10, 0] }}  // Movimiento vertical tipo bounce
+          transition={{
+            duration: 0.8,
+            repeat: Infinity, // Repite infinitamente
+            repeatType: "loop",
+            ease: "easeInOut",
+          }}
+        >
+          <FaShoppingCart size={24} />
+          {itemCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {itemCount}
+            </span>
+          )}
+        </motion.button>
 
       {/* Modal del carrito */}
       {isOpen && (
@@ -84,12 +93,10 @@ const Cart = () => {
                             +
                           </button>
                         </div>
-
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="text-red-500 hover:text-red-700 transition"
-                        >
-                          🗑
+                          className="text-black hover:text-gray-700 transition">
+                          <FaTrash />
                         </button>
                       </div>
                     </motion.div>
@@ -99,12 +106,13 @@ const Cart = () => {
                 {/* Botón de WhatsApp */}
                 <motion.button
                   onClick={sendToWhatsApp}
-                  className="w-full mt-6 bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-all"
+                  className="w-full mt-6 bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-all flex items-center justify-center"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Consultar por WhatsApp
+                  <FaWhatsapp className="mr-2" size={24} /> Consultar por WhatsApp
                 </motion.button>
+
               </>
             )}
           </div>
