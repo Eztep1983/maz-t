@@ -11,6 +11,8 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'grey-clarito': 'rgb(73 73 85)', 
+        // Agregamos el color azul oscuro personalizado
       },
     },
   },

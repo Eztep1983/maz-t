@@ -80,7 +80,7 @@ const ContactForm = () => {
             value={formData.email}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="example@email.com"
+            placeholder="correoejemplo@gmail.com"
             required
           />
         </div>
