@@ -59,7 +59,7 @@ const AboutUs = () => {
           <div className="w-full h-72 rounded-lg overflow-hidden shadow-lg">
             <iframe
               className="w-full h-full"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.9862393731366!2d-77.2811!3d1.2145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e296b1e1234567%3A0x9cfa123456789abc!2sTonersMAZ!5e0!3m2!1ses!2sco!4v1707000000000"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1994.45824409919!2d-77.27899399921704!3d1.2182379000000074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e2ed4870587a903%3A0x25fc52d9359c5f6e!2sServicio%20T%C3%A9cnico%20Konica!5e0!3m2!1ses-419!2sco!4v1739395425922!5m2!1ses-419!2sco"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
@@ -71,7 +71,7 @@ const AboutUs = () => {
           <h3 className="text-2xl font-semibold text-black mb-4">Síguenos en Redes Sociales</h3>
           <div className="flex justify-center space-x-6">
             <motion.a
-              href="https://facebook.com/TonersMAZ"
+              href="https://www.facebook.com/konica.minolta.7140"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 text-3xl"

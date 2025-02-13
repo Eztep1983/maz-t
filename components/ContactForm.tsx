@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { motion } from "framer-motion";
 
 const ContactForm = () => {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -43,6 +44,11 @@ const ContactForm = () => {
   };
 
   return (
+    <motion.div                
+    className="text-l font-bold text-black ml-2"
+    initial={{ opacity: 0, y: -10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}>
     <div className="max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-black">Contáctanos</h2>
       
@@ -60,7 +66,7 @@ const ContactForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-gray-700 mb-2">Name</label>
+          <label className="block text-gray-700 mb-2">Nombre</label>
           <input
             type="text"
             name="name"
@@ -86,7 +92,7 @@ const ContactForm = () => {
         </div>
         
         <div>
-          <label className="block text-gray-700 mb-2">Message</label>
+          <label className="block text-gray-700 mb-2">Mensaje</label>
           <textarea
             name="message"
             value={formData.message}
@@ -98,7 +104,7 @@ const ContactForm = () => {
           />
         </div>
         
-        <button
+        <motion.button
           type="submit"
           disabled={status === 'submitting'}
           className={`w-full py-2 px-4 rounded-md transition-colors ${
@@ -106,11 +112,14 @@ const ContactForm = () => {
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-blue-500 hover:bg-blue-600 text-white'
           }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          {status === 'submitting' ? 'Sending...' : 'Send Message'}
-        </button>
+          {status === 'submitting' ? 'Enviando...' : 'Enviar Mensaje'}
+        </motion.button>
       </form>
     </div>
+    </motion.div>      
   );
 };
 

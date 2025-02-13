@@ -1,21 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductGrid from "./ProductGrid";
 import ContactForm from "./ContactForm";
 import Cart from "./Cart";
 import AboutUs from "./AboutUs";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Star, StarHalf, Send, LogIn } from "lucide-react";
+
+
 
 const CatalogWebsite = () => {
   const [activeSection, setActiveSection] = useState("catalog");
   const [menuOpen, setMenuOpen] = useState(false);
-
   const cloudinaryBaseURL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
   const publicId = "company-items/logotipoTmaz";
   const imageUrl = `${cloudinaryBaseURL}/${publicId}`;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [showReviewForm, setShowReviewForm] = useState(false);
+const [reviews, setReviews] = useState([
+  {
+    id: 1,
+    name: "María García",
+    photoUrl: "/api/placeholder/48/48",
+    rating: 5,
+    comment: "¡Excelente servicio! Los toners son de muy buena calidad.",
+    date: "2024-02-10",
+    verified: true
+  },
+  {
+    id: 2,
+    name: "Juan Pérez",
+    photoUrl: "/api/placeholder/48/48",
+    rating: 4,
+    comment: "Buen producto, entrega rápida. Recomendado.",
+    date: "2024-02-09",
+    verified: true
+  }
+]);
+const [newReview, setNewReview] = useState({
+  rating: 5,
+  comment: ""
+});
 
+const handleSubmitReview = (e: React.FormEvent) => {
+  e.preventDefault();
+  const review = {
+    id: reviews.length + 1,
+    name: "Usuario Google", // Would come from Google profile
+    photoUrl: "/api/placeholder/48/48", // Would come from Google profile
+    rating: newReview.rating,
+    comment: newReview.comment,
+    date: new Date().toISOString().split('T')[0],
+    verified: true
+  };
+  setReviews([review, ...reviews]);
+  setNewReview({ rating: 5, comment: "" });
+  setShowReviewForm(false);
+};
+    const handleReload = () => {
+      window.location.reload();
+    };
   const testimonials = [
     {
       id: 1,
@@ -26,29 +71,28 @@ const CatalogWebsite = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Cart />
 
       {/* Navigation */}
       <nav className="bg-white shadow-lg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <img
-                src={imageUrl}
-                alt="TonersMAZ"
-                className="w-10 h-10 rounded-full shadow-lg"
-              />
-              <motion.div
-                className="text-xl font-bold text-black ml-2"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                TMAZ Quality Toner
-              </motion.div>
-            </div>
-
+    <div className="flex items-center" onClick={handleReload} style={{ cursor: 'pointer' }}>
+      <img
+        src={imageUrl}
+        alt="TonersMAZ"
+        className="w-10 h-10 rounded-full shadow-lg"
+      />
+      <motion.div
+        className="text-xl font-bold text-black ml-2"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        TMAZ Quality Toner
+      </motion.div>
+    </div>
             <div className="md:hidden">
               <button onClick={() => setMenuOpen(!menuOpen)}>
                 {menuOpen ? (
@@ -86,7 +130,7 @@ const CatalogWebsite = () => {
                   {section === "catalog"
                     ? "Catálogo"
                     : section === "testimonials"
-                    ? "Testimonios"
+                    ? "Opiniones"
                     : section === "contact"
                     ? "Contacto"
                     : section === "about"
@@ -114,7 +158,7 @@ const CatalogWebsite = () => {
                 {section === "catalog"
                   ? "Catálogo"
                   : section === "testimonials"
-                  ? "Testimonios"
+                  ? "Opiniones"
                   : section === "contact"
                   ? "Contacto"
                   : section === "about"
@@ -127,7 +171,7 @@ const CatalogWebsite = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-8 flex-grow">
         <AnimatePresence mode="wait">
           {activeSection === "catalog" && (
             <motion.div
@@ -142,7 +186,7 @@ const CatalogWebsite = () => {
             </motion.div>
           )}
 
-          {activeSection === "testimonials" && (
+{activeSection === "testimonials" && (
             <motion.div
               key="testimonials"
               initial={{ opacity: 0, y: 10 }}
@@ -150,28 +194,106 @@ const CatalogWebsite = () => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl font-bold mb-6 text-black">Testimonios</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-black">Opiniones</h2>
+                <button
+                  onClick={() => setIsLoggedIn(true)} // This would be replaced with actual Google auth
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-azul-oscuro transition-colors"
+                >
+                  <LogIn size={20} />
+                  <span>Iniciar con Google</span>
+                </button>
+              </div>
+
+              {/* Review Form */}
+              {showReviewForm && (
+                <motion.form
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-lg shadow-md p-6 mb-6"
+                  onSubmit={handleSubmitReview}
+                >
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">Calificación</label>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setNewReview({ ...newReview, rating: star })}
+                          className={`${
+                            star <= newReview.rating ? 'text-yellow-400' : 'text-gray-300'
+                          }`}
+                        >
+                          <Star size={24} fill={star <= newReview.rating ? "currentColor" : "none"} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">Tu opinión</label>
+                    <textarea
+                      value={newReview.comment}
+                      onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      rows={4}
+                      placeholder="Comparte tu experiencia..."
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowReviewForm(false)}
+                      className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      <Send size={20} />
+                      Publicar
+                    </button>
+                  </div>
+                </motion.form>
+              )}
+
+              {/* Reviews Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {testimonials.map((testimonial) => (
+                {reviews.map((review) => (
                   <motion.div
-                    key={testimonial.id}
+                    key={review.id}
                     className="bg-white rounded-lg shadow-md p-6"
                     whileHover={{ scale: 1.05 }}
                   >
                     <div className="flex items-center mb-4">
-                      <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                        {testimonial.name.charAt(0)}
-                      </div>
+                      <img
+                        src={review.photoUrl}
+                        alt={review.name}
+                        className="h-12 w-12 rounded-full"
+                      />
                       <div className="ml-4">
-                        <h3 className="font-semibold">{testimonial.name}</h3>
-                        <div className="flex text-yellow-400">
-                          {[...Array(testimonial.rating)].map((_, i) => (
-                            <span key={i}>★</span>
-                          ))}
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold">{review.name}</h3>
+                          {review.verified && (
+                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                              Verificado
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="flex text-yellow-400">
+                            {[...Array(review.rating)].map((_, i) => (
+                              <Star key={i} size={16} fill="currentColor" />
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-500 ml-2">{review.date}</span>
                         </div>
                       </div>
                     </div>
-                    <p className="text-gray-600">{testimonial.comment}</p>
+                    <p className="text-gray-600">{review.comment}</p>
                   </motion.div>
                 ))}
               </div>
@@ -182,6 +304,59 @@ const CatalogWebsite = () => {
           {activeSection === "about" && <AboutUs key="about" />}
         </AnimatePresence>
       </main>
+      {/* Footer */}
+      <footer className="bg-gradient-to-b from-gray-50 via-slate-100 to-slate-800">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Contact Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold mb-4 text-slate-800">Contacto</h3>
+              <div className="flex items-center space-x-3 text-slate-700 group">
+                <Phone className="group-hover:text-blue-600" size={20} />
+                <span className="group-hover:text-blue-600">+57 (314) 784-5883</span>
+              </div>
+              <div className="flex items-center space-x-3 text-slate-700 group">
+                <Mail className="group-hover:text-blue-600" size={20} />
+                <span className="group-hover:text-blue-600">serviciotecnicokonicaminolta@gmail.com</span>
+              </div>
+              <div className="flex items-center space-x-3 text-slate-700 group">
+                <MapPin className="group-hover:text-blue-600" size={20} />
+                <span className="group-hover:text-blue-600">San Juan De Pasto, Nariño Colombia</span>
+              </div>
+            </div>
+
+            {/* Business Hours */}
+            <div className="relative">
+              <h3 className="text-lg font-semibold mb-4 text-slate-800">Horario de Atención</h3>
+              <div className="space-y-2">
+                <p className="text-slate-700">Lunes - Viernes: 9:30am - 12:00pm | 2:40pm - 6:30pm</p>
+                <p className="text-slate-700">Sábado: 9:00 - 14:00</p>
+                <p className="text-slate-700">Domingo: Cerrado</p>
+              </div>
+            </div>
+
+            {/* Social Media */}
+            <div className="relative">
+              <h3 className="text-lg font-semibold mb-4 text-slate-800">Síguenos</h3>
+              <div className="flex space-x-4">
+                <a href="https://www.facebook.com/konica.minolta.7140" target= 'blank'className="text-slate-700 hover:text-blue-600 transition-colors">
+                  <Facebook size={24} />
+                </a>
+                <a href="#" target= 'blank' className="text-slate-700 hover:text-pink-600 transition-colors">
+                  <Instagram size={24} />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom section with darker background */}
+          <div className="mt-8 pt-4 border-t border-slate-300">
+              <p className="text-center text-sm transition-colors text-white">
+                © {new Date().getFullYear()} TMAZ Quality Toner. Todos los derechos reservados.
+              </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
