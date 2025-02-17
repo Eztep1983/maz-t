@@ -1,31 +1,46 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBlNdM-3D3ThyuMA8t7uG5XTOyD9OkFvNI",
-    authDomain: "tmaz-10fd2.firebaseapp.com",
-    projectId: "tmaz-10fd2",
-    storageBucket: "tmaz-10fd2.firebasestorage.app",
-    messagingSenderId: "705911798895",
-    appId: "1:705911798895:web:d449f7f9549033303f219a",
-    measurementId: "G-KWQ2RNTT6N"
-  };
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+};
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-const analytics = getAnalytics(app);
+// Initialize Firebase only if it hasn't been initialized already
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-const signInWithGoogle = async () => {
+// Initialize Firebase services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+// Google Auth Provider
+const googleProvider = new GoogleAuthProvider();
+
+// Sign in with Google function
+export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    console.log("User signed in:", result.user);
+    const result = await signInWithPopup(auth, googleProvider);
     return result.user;
   } catch (error) {
-    console.error("Error signing in:", error);
+    console.error('Error signing in with Google:', error);
+    throw error;
   }
 };
 
-export { auth, provider, signInWithGoogle };
+// Sign out function
+export const signOutUser = async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error('Error signing out:', error);
+    throw error;
+  }
+};
+
+export default app;
