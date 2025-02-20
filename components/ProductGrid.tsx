@@ -82,7 +82,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ category }) => {
               <h3 className="text-md font-semibold">{product.name}</h3>
               <p className="text-sm mt-1">{product.description}</p>
               <div className="mt-2 flex items-center space-x-2">
-                <span className={`px-2 py-1 rounded text-xs ${product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <span onClick={() => handleWhatsAppConsult(product.name)} className={`px-2 py-1 rounded text-xs ${product.inStock ? 
+                  'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                   {product.inStock ? 'Disponible' : 'Agotado'}
                 </span>
                 <button
