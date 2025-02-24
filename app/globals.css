@@ -20,4 +20,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
+@keyframes slideInFromTop {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+.animate-slideInFromTop {
+  animation: slideInFromTop 0.3s ease-out forwards;
+}

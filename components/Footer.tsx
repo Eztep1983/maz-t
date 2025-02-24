@@ -79,21 +79,6 @@ const Footer = () => {
                 <Instagram size={24} />
               </a>
             </div>
-            <div className="mt-6 bg-blue-50 p-4 rounded-lg shadow-sm">
-              <p className="text-sm text-slate-700">
-                Suscríbete a nuestro boletín para estar al día con nuestras ofertas y servicios.
-              </p>
-              <div className="mt-3 flex">
-                <input 
-                  type="email" 
-                  placeholder="Tu correo electrónico" 
-                  className="flex-1 px-3 py-2 border border-slate-300 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors">
-                  Suscribir
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -103,12 +88,6 @@ const Footer = () => {
             <p className="text-center text-sm text-slate-600 flex items-center">
               <Copyright size={16} className="mr-1" /> {new Date().getFullYear()} TMAZ Quality Toner. Todos los derechos reservados.
             </p>
-            <div className="mt-4 md:mt-0">
-              <ul className="flex space-x-4 text-sm">
-                <li><a href="#" className="text-slate-600 hover:text-blue-600 transition-colors">Términos y Condiciones</a></li>
-                <li><a href="#" className="text-slate-600 hover:text-blue-600 transition-colors">Política de Privacidad</a></li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>

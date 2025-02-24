@@ -41,12 +41,13 @@ const CatalogWebsite = () => {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingReviews, setLoadingReviews] = useState(true);
-
+  
   const cloudinaryBaseURL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
-  const publicId = "company-items/logotipoTmaz";
+  const publicId = "company-items/logotipoTmz";
   const imageUrl = `${cloudinaryBaseURL}/${publicId}`;
   const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
-
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setScreenWidth(window.innerWidth);
@@ -332,30 +333,62 @@ const CatalogWebsite = () => {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden bg-white shadow-lg py-4 flex flex-col items-center">
-            {["catalog", "testimonials", "contact", "about"].map((section) => (
+          <div 
+            className="md:hidden fixed inset-0 z-50 flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+          >
+            {/* Backdrop with opacity transition */}
+            <div 
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setMenuOpen(false)}
+              aria-hidden="true"
+            />
+            
+            {/* Menu container with slide animation */}
+            <div className="relative mt-16 bg-white shadow-xl rounded-t-xl overflow-hidden animate-slideInFromTop">
+              <nav className="flex flex-col">
+                {[
+                  { id: "catalog", label: "Catálogo" },
+                  { id: "testimonials", label: "Opiniones" },
+                  { id: "contact", label: "Contacto" },
+                  { id: "about", label: "Sobre Nosotros" }
+                ].map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => {
+                      setActiveSection(section.id);
+                      setMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-6 py-4 text-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ${
+                      activeSection === section.id 
+                        ? "bg-blue-600 text-white" 
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    aria-current={activeSection === section.id ? "page" : undefined}
+                  >
+                    <span className="flex items-center">
+                      {activeSection === section.id && (
+                        <span className="mr-2 text-blue-200">•</span>
+                      )}
+                      {section.label}
+                    </span>
+                  </button>
+                ))}
+              </nav>
+              
+              {/* Close button */}
               <button
-                key={section}
-                onClick={() => {
-                  setActiveSection(section);
-                  setMenuOpen(false);
-                }}
-                className={`w-full text-center py-2 ${
-                  activeSection === section ? "bg-slate-700 text-white" : "text-gray-600 hover:bg-gray-200"
-                }`}
-                aria-current={activeSection === section ? "page" : undefined}
+                onClick={() => setMenuOpen(false)}
+                className="absolute top-2 right-2 p-2 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Close menu"
               >
-                {section === "catalog"
-                  ? "Catálogo"
-                  : section === "testimonials"
-                  ? "Opiniones"
-                  : section === "contact"
-                  ? "Contacto"
-                  : section === "about"
-                  ? "Sobre Nosotros"
-                  : ""}
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            ))}
+            </div>
           </div>
         )}
       </nav>
@@ -391,7 +424,7 @@ const CatalogWebsite = () => {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as "date" | "rating" | "verified")}
-                      className="px-4 py-2 border rounded-lg w-full md:w-auto"
+                      className="px-4 py-2 border rounded-lg w-full md:w-auto text-black"
                       aria-label="Ordenar opiniones por"
                     >
                       <option value="date">Más recientes</option>
@@ -401,11 +434,11 @@ const CatalogWebsite = () => {
                     {!user ? (
                       <button
                         onClick={handleLoginClick}
-                        className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors w-full md:w-auto"
+                        className="flex items-center justify-center text-black gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors w-full md:w-auto"
                         aria-label="Iniciar sesión con Google"
                       >
                         <LogIn size={20} />
-                        <span>Iniciar con Google</span>
+                        <span>Opinar con Google</span>
                       </button>
                     ) : (
                       <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
@@ -517,7 +550,7 @@ const CatalogWebsite = () => {
                             </div>
                             <div className="ml-4">
                               <div className="flex items-center gap-2">
-                                <h3 className="font-semibold">{review.name}</h3>
+                                <h3 className="font-semibold text-black">{review.name}</h3>
                                 {review.verified && (
                                   <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                                     Verificado
