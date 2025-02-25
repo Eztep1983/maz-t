@@ -69,7 +69,7 @@ const Cart = () => {
         >
           <div className="bg-white p-6 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-black">Carrito de Compras</h2>
+              <h2 className="font-bold text-black">Carrito de Consultas</h2>
               <button onClick={() => setIsOpen(false)} className="text-black hover:text-black text-2xl">
                 ✕
               </button>
