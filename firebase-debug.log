@@ -1,0 +1,21 @@
+[debug] [2025-02-26T22:47:57.138Z] ----------------------------------------------------------------------
+[debug] [2025-02-26T22:47:57.141Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\MazT\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-02-26T22:47:57.142Z] CLI Version:   13.31.2
+[debug] [2025-02-26T22:47:57.142Z] Platform:      win32
+[debug] [2025-02-26T22:47:57.142Z] Node Version:  v22.13.0
+[debug] [2025-02-26T22:47:57.142Z] Time:          Wed Feb 26 2025 17:47:57 GMT-0500 (hora estándar de Colombia)
+[debug] [2025-02-26T22:47:57.142Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-02-26T22:47:57.150Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-02-26T22:47:57.151Z] > authorizing via signed-in user (serviciotecnicokonicaminolta@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\MazT\Desktop\maz-t
+

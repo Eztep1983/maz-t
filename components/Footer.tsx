@@ -71,7 +71,7 @@ const Footer = () => {
                 <Facebook size={24} />
               </a>
               <a 
-                href="#" 
+                href="https://www.instagram.com/pro_toshiba_service?igsh=bWR1cmx2bzJmbHl0" 
                 target="_blank" 
                 className="bg-slate-200 hover:bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-full text-slate-700 hover:text-white transition-colors"
                 aria-label="Instagram"

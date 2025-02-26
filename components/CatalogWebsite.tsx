@@ -540,9 +540,10 @@ const CatalogWebsite = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentReviews.map((review) => (
                       <motion.div
+                      key={review.id}
                       whileHover={{ scale: 1.05, boxShadow: "0px 10px 20px rgba(0,0,0,0.2)" }}
                       transition={{ type: 'spring', stiffness: 300 }}>
-                        <div key={review.id} className="bg-white rounded-lg shadow-md p-6">
+                        <div className="bg-white rounded-lg shadow-md p-6">
                           <div className="flex items-center mb-4">
                             <div className="h-12 w-12 rounded-full border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
                               <img
