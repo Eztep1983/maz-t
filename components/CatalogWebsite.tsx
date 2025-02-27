@@ -289,7 +289,7 @@ const CatalogWebsite = () => {
                 className="rounded-full shadow-lg"
               />
               <motion.div
-                className="text-xl font-bold text-black ml-2"
+                className="text-xl font-bold text-Azul ml-2"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -403,7 +403,7 @@ const CatalogWebsite = () => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl font-bold mb-6 text-black">Nuestros productos</h2>
+              <h2 className="text-2xl font-bold mb-6 text-Azul">Nuestros productos</h2>
               <ProductGrid />
             </motion.div>
           )}
@@ -419,7 +419,7 @@ const CatalogWebsite = () => {
             >
               <div className="max-w-6xl mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-black mb-4 md:mb-0">Opiniones</h2>
+                  <h2 className="text-2xl font-bold text-Azul mb-4 md:mb-0">Opiniones</h2>
                   <div className="flex flex-col md:flex-row items-center gap-4">
                     <select
                       value={sortBy}
@@ -442,11 +442,12 @@ const CatalogWebsite = () => {
                       </button>
                     ) : (
                       <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                        <img
-                          src={user.photoURL || '/api/placeholder/48/48'}
-                          alt={user.displayName || 'Usuario'}
-                          className="w-8 h-8 rounded-full border-2 border-white shadow-lg"
-                        />
+                          <img
+                            src={user.photoURL || '/api/placeholder/48/48'}
+                            alt={user.displayName || 'Usuario'}
+                            className="w-8 h-8 rounded-full border-2 border-white shadow-lg"
+                            onError={(e) => (e.currentTarget.src = '/default-avatar.png')}
+                          />
                         <button
                           onClick={() => setShowReviewForm(true)}
                           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full md:w-auto"

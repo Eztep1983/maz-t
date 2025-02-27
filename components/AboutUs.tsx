@@ -52,7 +52,7 @@ const AboutUs = () => {
           transition={{ duration: 0.7 }}
         >
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-Azul to-blue-500">
               Sobre Nosotros
             </span>
           </h1>
@@ -227,7 +227,7 @@ const AboutUs = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
         >
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
+          <h2 className="text-2xl font-bold text-center text-Azul mb-8">
             Marcas con las que Trabajamos
           </h2>
           <div className="flex flex-wrap justify-center gap-6">
@@ -251,9 +251,9 @@ const AboutUs = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
           >
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+            <h2 className="text-2xl font-bold text-Azul mb-4 flex items-center">
               <FaMapMarkerAlt className="text-red-500 mr-2" />
-              Nuestra Ubicación
+              Nuestro punto de venta autorizado
             </h2>
             <div className="rounded-xl overflow-hidden shadow-lg h-80">
               <iframe
@@ -325,7 +325,7 @@ const AboutUs = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.9 }}
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Síguenos en Redes Sociales</h2>
+          <h2 className="text-2xl font-bold text-Azul mb-6">Síguenos en Redes Sociales</h2>
           <div className="flex justify-center space-x-6">
             <motion.a
               href="https://www.facebook.com/konica.minolta.7140"

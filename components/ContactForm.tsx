@@ -50,7 +50,7 @@ const ContactForm = () => {
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}>
     <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-black">Contáctanos</h2>
+      <h2 className="text-2xl font-bold mb-6 text-Azul">Contáctanos</h2>
       
       {status === 'success' && (
         <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
