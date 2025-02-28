@@ -86,6 +86,7 @@ const Footer = () => {
         <div className="mt-10 pt-6 border-t border-slate-300">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-center text-sm text-slate-600 flex items-center">
+              
               <Copyright size={16} className="mr-1" /> {new Date().getFullYear()} TMAZ Quality Toner. Todos los derechos reservados.
             </p>
           </div>

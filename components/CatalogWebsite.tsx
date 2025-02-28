@@ -284,9 +284,9 @@ const CatalogWebsite = () => {
               <img
                 src={imageUrl}
                 alt="TonersMAZ"
-                width={40}
-                height={40}
-                className="rounded-full shadow-lg"
+                width={50}
+                height={50}
+                className="rounded shadow-lg"
               />
               <motion.div
                 className="text-xl font-bold text-Azul ml-2"
