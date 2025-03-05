@@ -5,12 +5,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import Footer from "./Footer";
 import { Star, Send, LogIn, ThumbsUp, Menu, X } from "lucide-react";
 import { auth, signInWithGoogle, signOutUser, db } from '../services/firebaseConfig';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, doc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, setDoc, doc, Timestamp } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 import ProductGrid from "./ProductGrid";
 import ContactForm from "./ContactForm";
 import Cart from "./Cart";
 import AboutUs from "./AboutUs";
+
+
+interface Reply {
+  id: string;
+  userId: string;
+  userName: string;
+  photoUrl: string;
+  text: string;
+  date: Date | Timestamp;
+  dateString?: string;
+}
 
 interface Review {
   id: string;
@@ -22,10 +33,14 @@ interface Review {
   dateString?: string; // For display purposes
   verified: boolean;
   userId?: string;
-  helpfulCount: number; // Changed to be always defined
 }
 
 const CatalogWebsite = () => {
+  const [isReplySubmitting, setIsReplySubmitting] = useState<{[reviewId: string]: boolean}>({});
+  const [repliesMap, setRepliesMap] = useState<{[reviewId: string]: Reply[]}>({});
+  const [expandedReplies, setExpandedReplies] = useState<{[reviewId: string]: boolean}>({});
+  const INITIAL_REPLIES_SHOWN = 2;
+  const avatar = '/images/avatar.png'; 
   const [activeSection, setActiveSection] = useState("catalog");
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -45,8 +60,7 @@ const CatalogWebsite = () => {
   const cloudinaryBaseURL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
   const publicId = "company-items/logotipoTmz";
   const imageUrl = `${cloudinaryBaseURL}/${publicId}`;
-  const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -66,17 +80,43 @@ const CatalogWebsite = () => {
         const querySnapshot = await getDocs(q);
         const reviewsData = querySnapshot.docs.map((doc) => {
           const data = doc.data();
-          // Convert Firestore Timestamp to JS Date for sorting
           const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
           return {
             id: doc.id,
             ...data,
             date,
             dateString: date.toISOString().split('T')[0],
-            helpfulCount: data.helpfulCount || 0
           };
         }) as Review[];
         setReviews(reviewsData);
+        
+        // Fetch replies for each review
+        const repliesObj: {[reviewId: string]: Reply[]} = {};
+        for (const review of reviewsData) {
+          const repliesSnapshot = await getDocs(
+            query(collection(db, `reviews/${review.id}/replies`), orderBy("date", "asc"))
+          );
+          
+          const repliesData = repliesSnapshot.docs.map(doc => {
+            const data = doc.data();
+            const date = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date);
+            return {
+              id: doc.id,
+              userId: data.userId,
+              userName: data.userName,
+              photoUrl: data.photoUrl,
+              text: data.text,
+              date,
+              dateString: date.toISOString().split('T')[0]
+            };
+          });
+          
+          if (repliesData.length > 0) {
+            repliesObj[review.id] = repliesData;
+          }
+        }
+        setRepliesMap(repliesObj);
+        
       } catch (error) {
         console.error("Error fetching reviews:", error);
       } finally {
@@ -127,7 +167,6 @@ const CatalogWebsite = () => {
         date: currentDate,
         verified: true,
         userId: user.uid,
-        helpfulCount: 0
       };
 
       const docRef = await addDoc(collection(db, 'reviews'), reviewData);
@@ -141,7 +180,6 @@ const CatalogWebsite = () => {
         ...reviewData,
         date: now,
         dateString: now.toISOString().split('T')[0],
-        helpfulCount: 0
       };
       
       setReviews(prevReviews => [newReviewWithId, ...prevReviews]);
@@ -167,38 +205,6 @@ const CatalogWebsite = () => {
     }
   };
 
-  // Handle helpful button click - FIXED to update Firestore
-  const handleHelpfulClick = async (reviewId: string) => {
-    if (!user) {
-      alert('Debes iniciar sesión para marcar una opinión como útil.');
-      return;
-    }
-    
-    try {
-      // Update in Firestore first
-      const reviewRef = doc(db, 'reviews', reviewId);
-      const reviewToUpdate = reviews.find(review => review.id === reviewId);
-      
-      if (!reviewToUpdate) return;
-      
-      // Increment the helpful count in Firestore
-      await updateDoc(reviewRef, {
-        helpfulCount: (reviewToUpdate.helpfulCount || 0) + 1
-      });
-      
-      // Then update local state
-      setReviews(prevReviews =>
-        prevReviews.map(review =>
-          review.id === reviewId
-            ? { ...review, helpfulCount: (review.helpfulCount || 0) + 1 }
-            : review
-        )
-      );
-    } catch (error) {
-      console.error('Error updating helpful count:', error);
-      alert('Error al marcar como útil. Por favor, intenta de nuevo.');
-    }
-  };
 
   // Handle reply submission - FIXED to save replies in Firestore
   const handleReplySubmit = async (reviewId: string) => {
@@ -208,7 +214,19 @@ const CatalogWebsite = () => {
       return;
     }
     
+    // Check if already submitting for this review
+    if (isReplySubmitting[reviewId]) {
+      return; // Exit if already submitting
+    }
+    
+    // Set submitting state
+    setIsReplySubmitting(prev => ({
+      ...prev,
+      [reviewId]: true
+    }));
+    
     try {
+      const now = new Date();
       // Add reply to a subcollection in Firestore
       const replyData = {
         userId: user.uid,
@@ -218,20 +236,51 @@ const CatalogWebsite = () => {
         date: serverTimestamp()
       };
       
-      await addDoc(collection(db, `reviews/${reviewId}/replies`), replyData);
+      const docRef = await addDoc(collection(db, `reviews/${reviewId}/replies`), replyData);
+      
+      // Update local state with the new reply
+      const newReply: Reply = {
+        id: docRef.id,
+        ...replyData,
+        date: now,
+        dateString: now.toISOString().split('T')[0]
+      };
+      
+      setRepliesMap(prevReplies => ({
+        ...prevReplies,
+        [reviewId]: [...(prevReplies[reviewId] || []), newReply]
+      }));
       
       // Clear form and close reply interface
       setReplyText("");
       setActiveReplyId(null);
       
-      // Optionally, you could fetch and display replies here
-      alert('Respuesta enviada correctamente.');
+      // Auto-expand replies for the review that just received a new reply
+      setExpandedReplies(prev => ({
+        ...prev,
+        [reviewId]: true
+      }));
       
     } catch (error) {
       console.error('Error submitting reply:', error);
       alert('Error al enviar tu respuesta. Por favor, intenta de nuevo.');
+    } finally {
+      // Reset submitting state
+      setIsReplySubmitting(prev => ({
+        ...prev,
+        [reviewId]: false
+      }));
     }
   };
+  
+  // Add a function to toggle expanded replies
+  const toggleRepliesExpansion = (reviewId: string) => {
+    setExpandedReplies(prev => ({
+      ...prev,
+      [reviewId]: !prev[reviewId]
+    }));
+  };
+  
 
   // Sort reviews - OPTIMIZED with proper date handling
   const sortedReviews = useMemo(() => {
@@ -299,13 +348,16 @@ const CatalogWebsite = () => {
             </div>
 
             <div className="md:hidden">
-              <button 
+              <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+                className="flex items-center space-x-2"
               >
+                <span className="text-left">Menu</span>
                 {menuOpen ? <X size={28} color="black" /> : <Menu size={28} color="black" />}
               </button>
             </div>
+
 
             <div className="hidden md:flex space-x-4">
               {["catalog", "testimonials", "contact", "about"].map((section) => (
@@ -403,7 +455,7 @@ const CatalogWebsite = () => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl font-bold mb-6 text-Azul">Nuestros productos</h2>
+              <center><h2 className="text-2xl font-bold mb-6 text-Azul">Nuestros productos</h2></center>
               <ProductGrid />
             </motion.div>
           )}
@@ -442,12 +494,12 @@ const CatalogWebsite = () => {
                       </button>
                     ) : (
                       <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                          <img
-                            src={user.photoURL || '/api/placeholder/48/48'}
-                            alt={user.displayName || 'Usuario'}
-                            className="w-8 h-8 rounded-full border-2 border-white shadow-lg"
-                            onError={(e) => (e.currentTarget.src = '/default-avatar.png')}
-                          />
+                        <img 
+                          src={user.photoURL || avatar} 
+                          alt={user.displayName || 'Usuario'} 
+                          className="w-8 h-8 rounded-full border-2 border-white shadow-lg" 
+                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = avatar; }} 
+                        />
                         <button
                           onClick={() => setShowReviewForm(true)}
                           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full md:w-auto"
@@ -473,7 +525,7 @@ const CatalogWebsite = () => {
                     onSubmit={handleSubmitReview}
                   >
                     <div className="mb-4">
-                      <label className="block text-sm font-medium mb-2">Calificación</label>
+                      <label className="block text-sm font-medium mb-2 text-black">Calificación</label>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
@@ -492,12 +544,12 @@ const CatalogWebsite = () => {
                       </div>
                     </div>
                     <div className="mb-4">
-                      <label htmlFor="reviewComment" className="block text-sm font-medium mb-2">Tu opinión</label>
+                      <label htmlFor="reviewComment" className="block text-sm font-medium mb-2 text-black">Tu opinión</label>
                       <textarea
                         id="reviewComment"
                         value={newReview.comment}
                         onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
-                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                         rows={4}
                         placeholder="Comparte tu experiencia..."
                         required
@@ -541,9 +593,7 @@ const CatalogWebsite = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {currentReviews.map((review) => (
                       <motion.div
-                      key={review.id}
-                      whileHover={{ scale: 1.05, boxShadow: "0px 10px 20px rgba(0,0,0,0.2)" }}
-                      transition={{ type: 'spring', stiffness: 300 }}>
+                      key={review.id}>
                         <div className="bg-white rounded-lg shadow-md p-6">
                           <div className="flex items-center mb-4">
                             <div className="h-12 w-12 rounded-full border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
@@ -576,14 +626,6 @@ const CatalogWebsite = () => {
                           </div>
                           <p className="text-gray-600">{review.comment}</p>
                           <div className="flex items-center gap-4 mt-4">
-                            <button
-                              onClick={() => handleHelpfulClick(review.id)}
-                              className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600"
-                              aria-label="Marcar como útil"
-                            >
-                              <ThumbsUp size={16} />
-                              <span>{review.helpfulCount} útil</span>
-                            </button>
                             {user && (
                               <button
                                 onClick={() => setActiveReplyId(activeReplyId === review.id ? null : review.id)}
@@ -598,21 +640,60 @@ const CatalogWebsite = () => {
                               <textarea
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
-                                className="w-full p-2 border rounded-lg"
+                                className="w-full p-2 border rounded-lg text-black"
                                 placeholder="Escribe una respuesta..."
                                 rows={3}
                               />
                               <div className="flex justify-end mt-2">
-                                <button
-                                  onClick={() => handleReplySubmit(review.id)}
-                                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                  disabled={replyText.trim() === ''}
-                                >
-                                  Enviar respuesta
-                                </button>
+                              <button
+                                onClick={() => handleReplySubmit(review.id)}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                                disabled={replyText.trim() === '' || isReplySubmitting[review.id]}
+                              >
+                                {isReplySubmitting[review.id] ? 'Enviando...' : 'Enviar respuesta'}
+                              </button>
                               </div>
                             </div>
                           )}
+                            {repliesMap[review.id] && repliesMap[review.id].length > 0 && (
+                              <div className="mt-4 border-t pt-3">
+                                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                                  Respuestas ({repliesMap[review.id].length})
+                                </h4>
+                                <div className="space-y-3">
+                                  {repliesMap[review.id]
+                                    .slice(0, expandedReplies[review.id] ? repliesMap[review.id].length : INITIAL_REPLIES_SHOWN)
+                                    .map((reply) => (
+                                      <div key={reply.id} className="pl-4 border-l-2 border-gray-200">
+                                        <div className="flex items-center gap-2">
+                                          <img
+                                            src={reply.photoUrl || avatar}
+                                            alt={reply.userName}
+                                            className="w-6 h-6 rounded-full"
+                                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = avatar; }} 
+                                          />
+                                          <span className="text-sm font-medium text-black">{reply.userName}</span>
+                                          <span className="text-xs text-gray-500">
+                                            {reply.dateString || formatDate(reply.date)}
+                                          </span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{reply.text}</p>
+                                      </div>
+                                    ))}
+                                  
+                                  {repliesMap[review.id].length > INITIAL_REPLIES_SHOWN && (
+                                    <button
+                                      onClick={() => toggleRepliesExpansion(review.id)}
+                                      className="text-sm text-blue-600 hover:text-blue-800 mt-2"
+                                    >
+                                      {expandedReplies[review.id] 
+                                        ? "Mostrar menos respuestas" 
+                                        : `Ver ${repliesMap[review.id].length - INITIAL_REPLIES_SHOWN} respuestas más`}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                         </div>
                       </motion.div>
                       ))}

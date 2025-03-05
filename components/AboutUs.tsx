@@ -5,12 +5,12 @@ import { FaFacebook, FaInstagram, FaMapMarkerAlt, FaPhone, FaEnvelope, FaAward, 
 import { useState } from "react";
 import ContactForm from "./ContactForm";
 
+
 const AboutUs = () => {
-  const cloudinaryBaseURL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
   const images = [
-    `${cloudinaryBaseURL}/empresa1.jpg`,
-    `${cloudinaryBaseURL}/empresa2.jpg`,
-    `${cloudinaryBaseURL}/empresa3.jpg`,
+    "/images/Toners_entrada.jpeg",
+    "/images/Instalaciones1.jpeg",
+    "/images/Instalaciones2.jpeg",
   ];
   
   const [activeTab, setActiveTab] = useState("historia");
@@ -33,7 +33,6 @@ const AboutUs = () => {
       opacity: 1
     }
   };
-
   const brands = [
     "Toshiba", "Konica Minolta", "Canon", "HP", "Ricoh", "Epson", "Samsung"
   ];
@@ -356,6 +355,7 @@ const AboutUs = () => {
             >
               Contáctanos Ahora
             </motion.button>
+            <div className="my-4"></div>
             {/* Otros componentes */}
             {activeSection === 'contact' && <ContactForm key="contact" />}
              

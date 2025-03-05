@@ -14,6 +14,7 @@ export default {
         'grey-clarito': 'rgb(73 73 85)', 
         'azul-oscuro': 'rgb(51 65 85)',
         'Azul':'#20284D',
+        
       },
     },
   },
