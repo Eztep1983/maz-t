@@ -289,7 +289,7 @@ const AboutUs = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Teléfono</h3>
-                    <p className="text-gray-600">+57 </p>
+                    <p className="text-gray-600">+57 3147985883</p>
                   </div>
                 </div>
                 
@@ -299,7 +299,7 @@ const AboutUs = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Correo Electrónico</h3>
-                    <p className="text-gray-600">info@tonersmaz.com</p>
+                    <p className="text-gray-600">tmazqualitytoner@gmail.com</p>
                   </div>
                 </div>
                 
