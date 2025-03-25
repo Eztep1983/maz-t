@@ -1,13 +1,18 @@
-// TestimonialsSection.jsx
-import { collection, query, getDocs, orderBy } from 'firebase/firestore';
-import { db } from '../services/firebaseConfig'; // Adjust the path to your Firebase config
-import React, { useState, useEffect } from 'react';
+import { collection, query, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { FcGoogle } from 'react-icons/fc';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, User as FirebaseUser } from 'firebase/auth';
+import { db, auth } from '../services/firebaseConfig';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { loadReCaptcha } from 'react-recaptcha-v3';
 import { 
   LogIn, User, Star, Send, MessageSquare, CheckCircle, 
   MessageCircle, ChevronUp, ChevronDown, ChevronLeft, 
   ChevronRight, ArrowUp 
 } from 'lucide-react';
+import DOMPurify from 'dompurify';
+import { onAuthStateChanged } from 'firebase/auth';
+import { addDoc } from 'firebase/firestore';
 
 interface Review {
   id: string;
@@ -15,139 +20,197 @@ interface Review {
   photoUrl?: string;
   rating: number;
   comment: string;
-  date?: string;
+  date?: string | Timestamp;
   dateString?: string;
   verified?: boolean;
 }
 
-interface Reply {
-  id: string;
-  userName?: string;
-  photoUrl?: string;
-  text: string;
-  date?: string;
-  dateString?: string;
-}
-
-interface User {
-  photoURL?: string;
-  displayName?: string;
-}
-
 interface TestimonialsSectionProps {
-  user?: User | null;
+  user?: FirebaseUser | null;
   reviews?: Review[];
   loadingReviews?: boolean;
-  handleLoginClick?: () => void;
-  handleLogout?: () => void;
-  handleSubmitReview?: (review: { rating: number; comment: string }) => Promise<void>;
-  handleReplySubmit?: (reviewId: string, replyText: string) => Promise<void>;
   avatar?: string;
   isStandalone?: boolean;
   sortOptions?: string[];
   initialSortBy?: string;
   className?: string;
   id?: string;
+  maxQueryLimit?: number;
+  isAdmin?: boolean;
 }
 
-const fetchReviews = async () => {
-  const reviewsCollection = collection(db, 'reviews');
-  const q = query(reviewsCollection, orderBy('date', 'desc'));
-  const querySnapshot = await getDocs(q);
-  const reviews = querySnapshot.docs.map(doc => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      name: data.name || '',
-      photoUrl: data.photoUrl || '',
-      rating: data.rating || 0,
-      comment: data.comment || '',
-      date: data.date || '',
-      dateString: data.dateString || '',
-      verified: data.verified || false
-    };
-  });
-  return reviews;
+const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23f0f0f0'/%3E%3Cpath d='M12 14c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v1h16v-1c0-2.7-5.3-4-8-4z' fill='%23bbb'/%3E%3C/svg%3E";
+
+const fetchReviews = async (maxLimit = 100, sortByField = 'date', sortDirection = 'desc') => {
+  try {
+    const reviewsCollection = collection(db, 'reviews');
+    const q = query(
+      reviewsCollection, 
+      orderBy(sortByField, sortDirection === 'asc' ? 'asc' : 'desc'),
+      limit(maxLimit)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const reviews = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name || '',
+        photoUrl: data.photoUrl || '',
+        rating: data.rating || 0,
+        comment: data.comment || '',
+        date: data.date || '',
+        dateString: data.dateString || '',
+        verified: data.verified || false
+      };
+    });
+    return reviews;
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    return [];
+  }
 };
 
-const fetchReplies = async (reviewId: string) => {
-  const repliesCollection = collection(db, `reviews/${reviewId}/replies`);
-  const q = query(repliesCollection, orderBy('date', 'asc'));
-  const querySnapshot = await getDocs(q);
-  const replies = querySnapshot.docs.map(doc => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      userName: data.userName || '',
-      photoUrl: data.photoUrl || '',
-      text: data.text || '',
-      date: data.date || '',
-      dateString: data.dateString || ''
-    };
-  });
-  return replies;
+
+const sanitizeText = (text: string): string => {
+  return DOMPurify.sanitize(text.trim().substring(0, 500));
+};
+
+const formatDate = (dateInput: string | Timestamp | undefined) => {
+  if (!dateInput) return 'N/A';
+  
+  try {
+    if (typeof dateInput === 'object' && 'seconds' in dateInput) {
+      return new Date(dateInput.seconds * 1000).toLocaleDateString();
+    }
+    
+    const date = new Date(String(dateInput));
+    return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString();
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'N/A';
+  }
 };
 
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   user = null,
   reviews = [],
   loadingReviews = false,
-  handleLoginClick = () => {},
-  handleLogout = () => {},
-  handleSubmitReview = async () => {},
-  handleReplySubmit = async () => {},
-  avatar = '/avatar.png',
+  avatar = DEFAULT_AVATAR,
   isStandalone = false,
   sortOptions = ["date", "rating", "verified"],
   initialSortBy = "date",
   className = "",
-  id = "testimonials-section"
+  id = "testimonials-section",
+  maxQueryLimit = 100,
+  isAdmin = false
 }) => {
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
   const [sortBy, setSortBy] = useState(initialSortBy);
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
-  const [replyText, setReplyText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isReplySubmitting, setIsReplySubmitting] = useState<Record<string, boolean>>({});
-  const [expandedReplies, setExpandedReplies] = useState<Record<string, boolean>>({});
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
-  const [repliesMap, setRepliesMap] = useState<Record<string, Reply[]>>({});
   const [fetchedReviews, setFetchedReviews] = useState<Review[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const ITEMS_PER_PAGE = 6;
-  const INITIAL_REPLIES_SHOWN = 2;
-  const indexOfLastReview = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstReview = indexOfLastReview - ITEMS_PER_PAGE;
-  const currentReviews = fetchedReviews.slice(indexOfFirstReview, indexOfLastReview);
-  const totalPages = Math.ceil(fetchedReviews.length / ITEMS_PER_PAGE);
+  const MAX_REVIEW_LENGTH = 500;
+  
+  useEffect(() => {
+    loadReCaptcha(process.env.REACT_APP_RECAPTCHA_SITE_KEY);
+  }, []);
+  
 
   useEffect(() => {
-    const loadReviews = async () => {
-      setIsLoadingReviews(true);
-      const fetchedReviews = await fetchReviews();
-      setFetchedReviews(fetchedReviews);
-      setIsLoadingReviews(false);
-    };
-
-    loadReviews();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const loadReplies = async () => {
-      const repliesMap: Record<string, Reply[]> = {};
-      for (const review of fetchedReviews) {
-        const replies = await fetchReplies(review.id);
-        repliesMap[review.id] = replies;
-      }
-      setRepliesMap(repliesMap);
-    };
-
-    if (fetchedReviews.length > 0) {
-      loadReplies();
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Se canceló el inicio de sesión, Por favor, inténtalo de nuevo:", error);
+      setError("Se canceló el inicio de sesión, Por favor, inténtalo de nuevo:");
     }
-  }, [fetchedReviews]);
+  };
+  
+  const handleGoogleLogout = async () => {
+    try {
+      await signOut(auth);
+      setShowReviewForm(false);
+      setError(null);
+      console.log("Sesión cerrada correctamente");
+    } catch (error) {
+      console.error("Error detallado al cerrar sesión:", error);
+      setError(`Error al cerrar sesión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    }
+  };
+
+  const handleSubmitReview = async (reviewData: { rating: number; comment: string }) => {
+    if (!currentUser) {
+      setError("Debes iniciar sesión para enviar una opinión");
+      return;
+    }
+  
+    try {
+      const docRef = await addDoc(collection(db, 'reviews'), {
+        name: currentUser.displayName,
+        photoUrl: currentUser.photoURL,
+        rating: reviewData.rating,
+        comment: reviewData.comment,
+        date: Timestamp.now(),
+        verified: false
+      });
+      return docRef;
+    } catch (error) {
+      console.error("Error adding review: ", error);
+      throw error;
+    }
+  };
+
+  const getSortedReviews = useCallback(() => {
+    return [...fetchedReviews].sort((a, b) => {
+      if (sortBy === 'rating') {
+        return b.rating - a.rating;
+      } else if (sortBy === 'verified') {
+        return (b.verified ? 1 : 0) - (a.verified ? 1 : 0);
+      } else {
+        const dateA = a.date ? new Date(a.date as string).getTime() : 0;
+        const dateB = b.date ? new Date(b.date as string).getTime() : 0;
+        return dateB - dateA;
+      }
+    });
+  }, [fetchedReviews, sortBy]);
+  
+  const sortedReviews = getSortedReviews();
+  const indexOfLastReview = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstReview = indexOfLastReview - ITEMS_PER_PAGE;
+  const currentReviews = sortedReviews.slice(indexOfFirstReview, indexOfLastReview);
+  const totalPages = Math.ceil(sortedReviews.length / ITEMS_PER_PAGE);
+
+  const loadReviews = useCallback(async () => {
+    setIsLoadingReviews(true);
+    setError(null);
+    try {
+      const fetchedReviews = await fetchReviews(maxQueryLimit);
+      setFetchedReviews(fetchedReviews);
+    } catch (err) {
+      console.error("Failed to load reviews:", err);
+      setError("Failed to load reviews. Please try again later.");
+    } finally {
+      setIsLoadingReviews(false);
+    }
+  }, [maxQueryLimit]);
+
+  useEffect(() => {
+    loadReviews();
+  }, [loadReviews]);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -155,51 +218,72 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const element = document.getElementById(id);
-      element?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const toggleRepliesExpansion = (reviewId: string) => {
-    setExpandedReplies(prev => ({
-      ...prev,
-      [reviewId]: !prev[reviewId]
-    }));
-  };
-
-  const formatDate = (date: string | undefined) => {
-    if (!date) return '';
-    try {
-      return new Date(date).toLocaleDateString();
-    } catch (error) {
-      return '';
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
   const handleReviewSubmission = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (newReview.rating < 1 || newReview.rating > 5) {
+      return;
+    }
+    
+    const sanitizedComment = sanitizeText(newReview.comment);
+    if (sanitizedComment.length < 10) {
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
-      await handleSubmitReview(newReview);
+      await handleSubmitReview({
+        rating: newReview.rating,
+        comment: sanitizedComment
+      });
       setNewReview({ rating: 0, comment: '' });
       setShowReviewForm(false);
-      const updatedReviews = await fetchReviews();
-      setFetchedReviews(updatedReviews);
+      await loadReviews();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      setError("Failed to submit review. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const handleReply = async (reviewId: string) => {
-    setIsReplySubmitting(prev => ({ ...prev, [reviewId]: true }));
-    try {
-      await handleReplySubmit(reviewId, replyText);
-      setReplyText('');
-      setActiveReplyId(null);
-      const updatedReplies = await fetchReplies(reviewId);
-      setRepliesMap(prev => ({ ...prev, [reviewId]: updatedReplies }));
-    } finally {
-      setIsReplySubmitting(prev => ({ ...prev, [reviewId]: false }));
-    }
+  const renderUserImage = (photoUrl?: string, name?: string, size: 'sm' | 'md' | 'lg' = 'md') => {
+    const sizeClass = {
+      sm: 'w-6 h-6',
+      md: 'w-8 h-8',
+      lg: 'w-12 h-12'
+    };
+    
+    const userIconSize = {
+      sm: 12,
+      md: 16,
+      lg: 24
+    };
+    
+    return (
+      <div className={`${sizeClass[size]} rounded-full border-2 border-white shadow-lg overflow-hidden flex-shrink-0 bg-gray-200 flex items-center justify-center`}>
+        {photoUrl ? (
+          <img
+            src={photoUrl}
+            alt={name || 'Usuario'}
+            className="h-full w-full object-cover"
+            onError={(e) => { 
+              const target = e.currentTarget;
+              target.onerror = null; 
+              target.src = avatar || DEFAULT_AVATAR;
+            }}
+            loading="lazy"
+          />
+        ) : (
+          <User size={userIconSize[size]} />
+        )}
+      </div>
+    );
   };
 
   const Container = isStandalone ? React.Fragment : motion.div;
@@ -212,7 +296,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   };
 
   return (
-    <Container key="testimonials" {...containerProps} id={id}>
+    <Container {...containerProps} id={id}>
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-Azul mb-4 md:mb-0">Opiniones</h2>
@@ -229,34 +313,19 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 </option>
               ))}
             </select>
-            {!user ? (
+            {!currentUser ? (
               <button
-                onClick={handleLoginClick}
+                onClick={handleGoogleLogin}
                 className="flex items-center justify-center text-black gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors w-full md:w-auto"
                 aria-label="Iniciar sesión con Google"
                 type="button"
               >
-                <LogIn size={20} />
+                <FcGoogle className="w-5 h-5" />
                 <span>Opinar con Google</span>
               </button>
-            ) : (
-              <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                {user.photoURL ? (
-                  <img 
-                    src={user.photoURL} 
-                    alt={user.displayName || 'Usuario'} 
-                    className="w-8 h-8 rounded-full border-2 border-white shadow-lg" 
-                    onError={(e) => { 
-                      const target = e.currentTarget;
-                      target.onerror = null; 
-                      target.src = avatar;
-                    }} 
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full border-2 border-white shadow-lg bg-gray-200 flex items-center justify-center">
-                    <User size={16} />
-                  </div>
-                )}
+              ) : (
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                {renderUserImage(currentUser.photoURL ?? undefined, currentUser.displayName ?? undefined, 'md')}
                 <button
                   onClick={() => setShowReviewForm(true)}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full md:w-auto"
@@ -265,8 +334,8 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   Escribir opinión
                 </button>
                 <button
-                  onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-800 w-full md:w-auto"
+                  onClick={handleGoogleLogout}
+                  className="px-4 py-2 text-red-600 hover:text-red-800 border border-red-200 rounded-lg hover:bg-red-50 transition-colors w-full md:w-auto"
                   type="button"
                 >
                   Cerrar sesión
@@ -276,7 +345,20 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           </div>
         </div>
 
-        {showReviewForm && user && (
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative" role="alert">
+            <span className="block sm:inline">{error}</span>
+            <button 
+              type="button" 
+              className="absolute top-0 right-0 px-4 py-3"
+              onClick={() => setError(null)}
+            >
+              <span className="text-red-500">&times;</span>
+            </button>
+          </div>
+        )}
+
+        {showReviewForm && currentUser && (
           <motion.form
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -307,15 +389,18 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               <textarea
                 id="reviewComment"
                 value={newReview.comment}
-                onChange={(e) => setNewReview((prev) => ({ ...prev, comment: e.target.value }))}
+                onChange={(e) => setNewReview((prev) => ({ 
+                  ...prev, 
+                  comment: e.target.value.substring(0, MAX_REVIEW_LENGTH)
+                }))}
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 rows={4}
                 placeholder="Comparte tu experiencia..."
                 required
-                maxLength={500}
+                maxLength={MAX_REVIEW_LENGTH}
               />
               <div className="text-xs text-gray-500 mt-1">
-                {newReview.comment.length}/500 caracteres
+                {newReview.comment.length}/{MAX_REVIEW_LENGTH} caracteres
               </div>
             </div>
             <div className="flex justify-end gap-3">
@@ -370,25 +455,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 >
                   <div className="bg-white rounded-lg shadow-md p-6 h-full flex flex-col">
                     <div className="flex items-center mb-4">
-                      <div className="h-12 w-12 rounded-full border-2 border-white shadow-lg overflow-hidden flex-shrink-0 bg-gray-200">
-                        {review.photoUrl ? (
-                          <img
-                            src={review.photoUrl}
-                            alt={review.name || 'Usuario anónimo'}
-                            className="h-full w-full object-cover"
-                            onError={(e) => { 
-                              const target = e.currentTarget;
-                              target.onerror = null; 
-                              target.src = avatar;
-                            }}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center">
-                            <User size={24} />
-                          </div>
-                        )}
-                      </div>
+                      {renderUserImage(review.photoUrl, review.name, 'lg')}
                       <div className="ml-4">
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-black">
@@ -419,116 +486,11 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                         </div>
                       </div>
                     </div>
-                    <p className="text-gray-600 mb-4 flex-grow">
-                      {review.comment}
+                    <p className="text-gray-600 mb-4 flex-grow whitespace-pre-line">
+                      {DOMPurify.sanitize(review.comment)}
                     </p>
                     <div className="flex items-center gap-4 mt-2">
-                      {user && (
-                        <button
-                          onClick={() => {
-                            setActiveReplyId(activeReplyId === review.id ? null : review.id);
-                            if (activeReplyId !== review.id) {
-                              setReplyText('');
-                            }
-                          }}
-                          className="text-sm text-gray-600 hover:text-blue-600 flex items-center gap-1"
-                          type="button"
-                        >
-                          <MessageCircle size={16} />
-                          {activeReplyId === review.id ? 'Cancelar' : 'Responder'}
-                        </button>
-                      )}
                     </div>
-                    {activeReplyId === review.id && (
-                      <div className="mt-4">
-                        <textarea
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          className="w-full p-2 border rounded-lg text-black"
-                          placeholder="Escribe una respuesta..."
-                          rows={3}
-                          maxLength={300}
-                        />
-                        <div className="flex justify-between mt-2">
-                          <span className="text-xs text-gray-500">
-                            {replyText.length}/300 caracteres
-                          </span>
-                          <button
-                            onClick={() => handleReply(review.id)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
-                            disabled={replyText.trim().length < 5 || isReplySubmitting[review.id]}
-                            type="button"
-                          >
-                            {isReplySubmitting[review.id] ? (
-                              <>
-                                <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
-                                Enviando...
-                              </>
-                            ) : 'Enviar respuesta'}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    {repliesMap[review.id] && repliesMap[review.id].length > 0 && (
-                      <div className="mt-4 border-t pt-3">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                          <MessageSquare size={14} className="mr-1" />
-                          Respuestas ({repliesMap[review.id].length})
-                        </h4>
-                        <div className="space-y-3">
-                          {repliesMap[review.id]
-                            .slice(0, expandedReplies[review.id] ? repliesMap[review.id].length : INITIAL_REPLIES_SHOWN)
-                            .map((reply) => (
-                              <div key={reply.id} className="pl-4 border-l-2 border-gray-200">
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-200">
-                                    {reply.photoUrl ? (
-                                      <img
-                                        src={reply.photoUrl}
-                                        alt={reply.userName || 'Usuario anónimo'}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => { 
-                                          const target = e.currentTarget;
-                                          target.onerror = null; 
-                                          target.src = avatar;
-                                        }}
-                                        loading="lazy"
-                                      />
-                                    ) : (
-                                      <div className="h-full w-full flex items-center justify-center">
-                                        <User size={12} />
-                                      </div>
-                                    )}
-                                  </div>
-                                  <span className="text-sm font-medium text-black">
-                                    {reply.userName || 'Usuario anónimo'}
-                                  </span>
-                                  <span className="text-xs text-gray-500">
-                                    {reply.dateString || formatDate(reply.date)}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-gray-600 mt-1">{reply.text}</p>
-                              </div>
-                            ))}
-                          
-                          {repliesMap[review.id].length > INITIAL_REPLIES_SHOWN && (
-                            <button
-                              onClick={() => toggleRepliesExpansion(review.id)}
-                              className="text-sm text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1"
-                              type="button"
-                            >
-                              {expandedReplies[review.id] 
-                                ? <ChevronUp size={16} />
-                                : <ChevronDown size={16} />
-                              }
-                              {expandedReplies[review.id] 
-                                ? "Mostrar menos respuestas" 
-                                : `Ver ${repliesMap[review.id].length - INITIAL_REPLIES_SHOWN} respuestas más`}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </motion.div>
               ))}

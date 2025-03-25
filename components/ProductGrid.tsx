@@ -163,7 +163,7 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState(true);  
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { addToCart } = useCart();
   const modalRef = useRef<HTMLDivElement>(null);
@@ -369,8 +369,7 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
           <h3 className="font-semibold">Filtros</h3>
           <button 
             onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden flex items-center space-x-1 text-blue-500"
-          >
+            className="md:hidden flex items-center space-x-1 text-blue-500">
             <FaFilter size={14} />
             <span>{showFilters ? 'Ocultar' : 'Mostrar'}</span>
           </button>
@@ -463,18 +462,17 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
             </div>
           )}
           
-          {/* Reset filters button */}
-            <button
-              onClick={resetFilters}
-              className="text-sm text-blue-500 hover:text-blue-700"
-            >
-              Restablecer filtros
-            </button>
           {/* Category pills for quick selection */}
           {uniqueCategories.length > 0 && (
             <div className="mt-4">
               <p className="text-sm font-medium mb-2">Categorías populares:</p>
               <div className="flex flex-wrap gap-2">
+              <button
+              onClick={resetFilters}
+              className="text-sm text-blue-500 hover:text-blue-700"
+            >
+              Restablecer filtros
+            </button>
                 {uniqueCategories.slice(0, 5).map(cat => (
                   <button
                     key={cat}
@@ -569,7 +567,7 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
                 )}
                 
                 <div className="mt-2 flex items-center space-x-2">
-                  <span className={`px-2 py-1 rounded text-xs ${product.inStock ? 
+                  <span onClick={() => handleWhatsAppConsult(product.name)}className={`px-2 py-1 rounded text-xs ${product.inStock ? 
                     'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                     {product.inStock ? 'Disponible' : 'Agotado'}
                   </span>
