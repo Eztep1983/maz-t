@@ -3,7 +3,7 @@ import { Phone, Mail, MapPin, Facebook, Instagram, Clock, Copyright } from "luci
 const Footer = () => {
   return (
     <footer className="bg-slate-100">
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 py-12 ">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Contact Information */}
           <div className="space-y-5">
@@ -14,7 +14,7 @@ const Footer = () => {
               <div className="bg-blue-50 p-2 rounded-full">
                 <Phone className="text-blue-600" size={20} />
               </div>
-              <span className="group-hover:text-blue-600 transition-colors">+57 (314) 784-5883</span>
+              <span className="group-hover:text-blue-600 transition-colors">+57 (314) 74-883</span>
             </div>
             <div className="flex items-center space-x-3 text-slate-700 group hover:translate-x-1 transition-transform">
               <div className="bg-blue-50 p-2 rounded-full">
