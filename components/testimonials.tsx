@@ -1,4 +1,4 @@
-import { collection, query, orderBy, limit, Timestamp, onSnapshot, addDoc, serverTimestamp, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, limit, Timestamp, onSnapshot, addDoc, serverTimestamp, where, setDoc, doc, getDoc } from 'firebase/firestore';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { User, Star, Send, MessageSquare, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';

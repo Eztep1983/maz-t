@@ -4,7 +4,7 @@ import { useCart } from './CartContext';
 import { FaWhatsapp, FaTimes, FaSearch, FaChevronDown, FaFilter, FaStar } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../services/firebaseConfig'; 
-import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 
 interface Product {
   id: string;
