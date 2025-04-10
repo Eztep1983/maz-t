@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["res.cloudinary.com"],
   },
-  distDir: 'build', // Cambia '.next' a 'build' o cualquier otro directorio local
+  distDir: '.next', 
 };
 
 export default nextConfig;
