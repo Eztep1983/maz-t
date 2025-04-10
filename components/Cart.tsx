@@ -1,38 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCart } from "./CartContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { fadeIn } from "@/utils/animations";
 import { FaShoppingCart, FaWhatsapp, FaTrash, FaEnvelope } from 'react-icons/fa';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [animateCart, setAnimateCart] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const { items, removeFromCart, updateQuantity, itemCount } = useCart();
+  const prevItemCount = useRef(itemCount);
 
-  // Función para enviar detalles del carrito por correo
+  // Animación al agregar producto
+  useEffect(() => {
+    if (itemCount > prevItemCount.current) {
+      setAnimateCart(true);
+      setShowToast(true);
+      setTimeout(() => setAnimateCart(false), 500);
+      setTimeout(() => setShowToast(false), 2000);
+    }
+    prevItemCount.current = itemCount;
+  }, [itemCount]);
+
   const sendToEmail = () => {
-    const emailAddress = "serviciotecnicokonikaminolta@gmail.com";  
+    const emailAddress = "serviciotecnicokonikaminolta@gmail.com";
     const subject = "Consulta de productos";
-    const message = items
-      .map((item) => `${item.name} (x${item.quantity})`)
-      .join("\n");
-
+    const message = items.map((item) => `${item.name} (x${item.quantity})`).join("\n");
     const emailBody = `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`;
-
     const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
     window.open(mailtoLink, "_blank");
   };
 
-  // Función para enviar detalles del carrito a WhatsApp
   const sendToWhatsApp = () => {
-    const phoneNumber = "573147845883"; 
-    const message = items
-      .map((item) => `${item.name} (x${item.quantity})`)
-      .join("\n");
-
+    const phoneNumber = "573147845883";
+    const message = items.map((item) => `${item.name} (x${item.quantity})`).join("\n");
     const whatsappMessage = `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`;
-
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(whatsappURL, "_blank");
   };
@@ -42,14 +46,11 @@ const Cart = () => {
       {/* Botón de carrito */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all z-50"
-        animate={{ y: [0, -10, 0] }}  // Movimiento vertical tipo bounce
-        transition={{
-          duration: 0.8,
-          repeat: Infinity, // Repite infinitamente
-          repeatType: "loop",
-          ease: "easeInOut",
-        }}
+        className={`fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all z-50 ${
+          animateCart ? 'ring-4 ring-blue-300' : ''
+        }`}
+        animate={animateCart ? { scale: [1, 1.2, 1] } : false}
+        transition={{ duration: 0.5 }}
       >
         <FaShoppingCart size={24} />
         {itemCount > 0 && (
@@ -58,6 +59,20 @@ const Cart = () => {
           </span>
         )}
       </motion.button>
+
+      {/* Toast de confirmación */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-20 right-4 bg-white border border-gray-300 px-4 py-2 rounded-md shadow-lg text-gray-800 z-50"
+          >
+            Producto agregado al carrito
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Modal del carrito */}
       {isOpen && (
@@ -80,40 +95,43 @@ const Cart = () => {
             ) : (
               <>
                 <div className="space-y-4">
-                  {items.map((item) => (
-                    <motion.div
-                      key={item.id}
-                      variants={fadeIn}
-                      initial="hidden"
-                      animate="visible"
-                      className="flex items-center justify-between border-b pb-4"
-                    >
-                      <h3 className="font-semibold">{item.name}</h3>
+                  <AnimatePresence>
+                    {items.map((item) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex items-center justify-between border-b pb-4"
+                      >
+                        <h3 className="font-semibold">{item.name}</h3>
 
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="w-8 h-8 rounded-full border flex items-center justify-center hover:bg-gray-100 transition"
+                            >
+                              -
+                            </button>
+                            <span className="w-8 text-center">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="w-8 h-8 rounded-full border flex items-center justify-center hover:bg-gray-100 transition"
+                            >
+                              +
+                            </button>
+                          </div>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-8 h-8 rounded-full border flex items-center justify-center hover:bg-gray-100 transition"
-                          >
-                            -
-                          </button>
-                          <span className="w-8 text-center">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-8 h-8 rounded-full border flex items-center justify-center hover:bg-gray-100 transition"
-                          >
-                            +
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-gray-600 hover:text-gray-700 transition">
+                            <FaTrash />
                           </button>
                         </div>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-gray-600 hover:text-gray-700 transition">
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
 
                 {/* Botón de WhatsApp */}
@@ -129,7 +147,7 @@ const Cart = () => {
                 {/* Botón de Gmail */}
                 <motion.button
                   onClick={sendToEmail}
-                  className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-500 transition-all flex items-center justify-center"
+                  className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all flex items-center justify-center"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

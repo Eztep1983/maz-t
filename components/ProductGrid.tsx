@@ -364,7 +364,7 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
   return (
     <div className="text-black">
       {/* Enhanced Filters with mobile-friendly toggle */}
-      <div className="mb-4 p-4 bg-white rounded-lg shadow">
+      <div className="mb-4 p-4 bg-white rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold">Filtros</h3>
           <button 
