@@ -418,13 +418,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       setRemainingSubmissions(remaining);
       setTimeout(() => setSuccess(null), 5000);
       setCurrentPage(1);
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error("Error al enviar reseña:", error);
-      if (error instanceof Error) {
-        setError(error.message || "Error al enviar la reseña. Por favor, inténtalo de nuevo.");
-      } else {
-        setError("Error al enviar la reseña. Por favor, inténtalo de nuevo.");
-      }
+      setError(error.message || "Error al enviar la reseña. Por favor, inténtalo de nuevo.");
     } finally {
       setIsSubmitting(false);
     }
