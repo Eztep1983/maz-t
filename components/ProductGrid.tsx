@@ -177,7 +177,7 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
         const productsRef = collection(db, "products");
         
         // Create a base query - could add more sophisticated querying here
-        let productsQuery = query(productsRef);
+        const productsQuery = query(productsRef);
         
         // You could add server-side filtering here if needed
         // if (selectedCategory) {
@@ -264,7 +264,7 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
 
   // Filter and sort products with useMemo
   const filteredProducts = useMemo(() => {
-    let result = products.filter((product) => {
+    const result = products.filter((product) => {
       const matchesCategory = !selectedCategory || product.category === selectedCategory;
       const matchesStock = !showInStock || product.inStock;
       const matchesTags = selectedTags.length === 0 || 
