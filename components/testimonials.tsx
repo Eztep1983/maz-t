@@ -371,7 +371,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const handleReviewSubmission = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!auth.currentUser && !newReview.name) {
-      setError("Por favor ingresa un nombre o inicia sesión");
+      setError("Por favor ingresa un nombre para enviar una reseña.");
       return;
     }
     
@@ -564,7 +564,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label htmlFor="reviewName" className="block text-sm font-medium mb-2 text-black">Nombre (opcional)</label>
+                <label htmlFor="reviewName" className="block text-sm font-medium mb-2 text-black">Nombre </label>
                 <input
                   id="reviewName"
                   type="text"
