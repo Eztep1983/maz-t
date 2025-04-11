@@ -175,21 +175,12 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
       setError(null);
       try {
         const productsRef = collection(db, "products");
-        
-        // Create a base query - could add more sophisticated querying here
         const productsQuery = query(productsRef);
-        
-        // You could add server-side filtering here if needed
-        // if (selectedCategory) {
-        //   productsQuery = query(productsQuery, where("category", "==", selectedCategory));
-        // }
-        
         const querySnapshot = await getDocs(productsQuery);
         const productsData: Product[] = [];
         
         querySnapshot.docs.forEach(doc => {
           const data = doc.data();
-          // Validate that the document has all required fields
           if (data.name && data.imagePublicId) {
             productsData.push({
               id: doc.id,
@@ -217,7 +208,6 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
   }, []);
 
   useEffect(() => {
-    // Handle clicks outside the modal to close it
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         setSelectedImage(null);
@@ -237,7 +227,6 @@ const ProductGrid: React.FC<{ category?: string }> = ({ category }) => {
     };
   }, [selectedImage, isDropdownOpen]);
 
-  // Extract categories with useMemo for better performance
   const { uniqueCategories, uniqueTags } = useMemo(() => {
     const categories = products
       .map(p => p.category)

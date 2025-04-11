@@ -1,24 +1,64 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from "framer-motion";
+import { Facebook, Instagram } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
+
+type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
+type FormData = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+};
+
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xnnnrnjq';
+
+const socialLinks = [
+  {
+    platform: 'Facebook',
+    url: 'https://www.facebook.com/konica.minolta.7140',
+    icon: <Facebook size={24} />,
+    className: 'bg-blue-600 hover:bg-blue-700'
+  },
+  {
+    platform: 'Instagram',
+    url: 'https://www.instagram.com/pro_toshiba_service?igsh=bWR1cmx2bzJmbHl0',
+    icon: <Instagram size={24} />,
+    className: 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600'
+  },
+  {
+    platform: 'WhatsApp',
+    url: 'https://wa.me/3147845883',
+    icon: <FaWhatsapp size={24} />,
+    className: 'bg-green-500 hover:bg-green-600'
+  }
+];
 
 const ContactForm = () => {
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState({
+  const [status, setStatus] = useState<FormStatus>('idle');
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     subject: '',
     message: ''
   });
-  const [focused, setFocused] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validación adicional del formulario
+    if (!formData.name || !formData.email || !formData.message) {
+      setStatus('error');
+      return;
+    }
+
     setStatus('submitting');
 
     try {
-      const response = await fetch('https://formspree.io/f/xnnnrnjq', { 
+      const response = await fetch(FORMSPREE_ENDPOINT, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -30,10 +70,7 @@ const ContactForm = () => {
         setStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });
         
-        // Auto-reset success message after 5 seconds
-        setTimeout(() => {
-          setStatus('idle');
-        }, 5000);
+        setTimeout(() => setStatus('idle'), 5000);
       } else {
         setStatus('error');
       }
@@ -42,21 +79,21 @@ const ContactForm = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleFocus = (field: string) => {
-    setFocused(field);
-  };
+  const handleFocus = useCallback((field: string) => {
+    setFocusedField(field);
+  }, []);
 
-  const handleBlur = () => {
-    setFocused(null);
-  };
+  const handleBlur = useCallback(() => {
+    setFocusedField(null);
+  }, []);
 
   const formContainer = {
     hidden: { opacity: 0 },
@@ -78,26 +115,51 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
+    <div className="bg-white rounded-lg shadow-xl p-6 md:p-8 max-w-2xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }} 
+        animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-bold mb-2 text-[#20284D]">Contáctanos</h2>
-        <div className="w-20 h-1 bg-[#20284D] mb-6"></div>
-        <p className="text-gray-600 mb-8">Estamos aquí para ayudarte. Completa el formulario y nos pondremos en contacto contigo pronto.</p>
-        
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#20284D]">Contáctanos</h2>
+            <div className="w-16 h-1 bg-[#20284D] mt-2"></div>
+          </div>
+          
+          <div className="flex space-x-3">
+            {socialLinks.map((link) => (
+              <a
+                key={link.platform}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`p-2.5 rounded-full text-white transition-colors ${link.className}`}
+                aria-label={link.platform}
+              >
+                {link.icon}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <p className="text-gray-600 mb-6">
+          Estamos aquí para ayudarte.
+          <br /> 
+          <br />
+          O tambien puedes completar el formulario y nos pondremos en contacto contigo pronto.
+        </p>
+
         {status === 'success' && (
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md flex items-center"
+            className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md flex items-start"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
-            <span>¡Gracias por su mensaje! Nos pondremos en contacto con usted pronto.</span>
+            <span>¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.</span>
           </motion.div>
         )}
         
@@ -105,12 +167,12 @@ const ContactForm = () => {
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md flex items-center"
+            className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md flex items-start"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
-            <span>Algo salió mal. Por favor, inténtelo de nuevo más tarde.</span>
+            <span>Algo salió mal. Por favor, verifica los datos e inténtalo de nuevo.</span>
           </motion.div>
         )}
 
@@ -120,40 +182,50 @@ const ContactForm = () => {
           initial="hidden"
           animate="visible"
           className="space-y-5"
+          noValidate
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <motion.div variants={formItem}>
-              <label className={`block text-sm font-medium mb-2 transition-colors ${focused === 'name' ? 'text-[#20284D]' : 'text-gray-700'}`}>
+              <label 
+                htmlFor="name"
+                className={`block text-sm font-medium mb-2 transition-colors ${focusedField === 'name' ? 'text-[#20284D]' : 'text-gray-700'}`}
+              >
                 Nombre
               </label>
-              <div className={`relative rounded-md shadow-sm border ${focused === 'name' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
+              <div className={`relative rounded-md shadow-sm border ${focusedField === 'name' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
                 <input
+                  id="name"
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   onFocus={() => handleFocus('name')}
                   onBlur={handleBlur}
-                  className="block w-full px-4 py-3 rounded-md focus:outline-none bg-transparent"
+                  className="block w-full px-4 py-2.5 rounded-md focus:outline-none bg-transparent"
                   placeholder="Tu nombre"
                   required
+                  minLength={2}
                 />
               </div>
             </motion.div>
             
             <motion.div variants={formItem}>
-              <label className={`block text-sm font-medium mb-2 transition-colors ${focused === 'email' ? 'text-[#20284D]' : 'text-gray-700'}`}>
+              <label 
+                htmlFor="email"
+                className={`block text-sm font-medium mb-2 transition-colors ${focusedField === 'email' ? 'text-[#20284D]' : 'text-gray-700'}`}
+              >
                 Email
               </label>
-              <div className={`relative rounded-md shadow-sm border ${focused === 'email' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
+              <div className={`relative rounded-md shadow-sm border ${focusedField === 'email' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
                 <input
+                  id="email"
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   onFocus={() => handleFocus('email')}
                   onBlur={handleBlur}
-                  className="block w-full px-4 py-3 rounded-md focus:outline-none bg-transparent"
+                  className="block w-full px-4 py-2.5 rounded-md focus:outline-none bg-transparent"
                   placeholder="ejemplo@correo.com"
                   required
                 />
@@ -162,54 +234,61 @@ const ContactForm = () => {
           </div>
           
           <motion.div variants={formItem}>
-            <label className={`block text-sm font-medium mb-2 transition-colors ${focused === 'subject' ? 'text-[#20284D]' : 'text-gray-700'}`}>
+            <label 
+              htmlFor="subject"
+              className={`block text-sm font-medium mb-2 transition-colors ${focusedField === 'subject' ? 'text-[#20284D]' : 'text-gray-700'}`}
+            >
               Asunto
             </label>
-            <div className={`relative rounded-md shadow-sm border ${focused === 'subject' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
+            <div className={`relative rounded-md shadow-sm border ${focusedField === 'subject' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
               <input
+                id="subject"
                 type="text"
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
                 onFocus={() => handleFocus('subject')}
                 onBlur={handleBlur}
-                className="block w-full px-4 py-3 rounded-md focus:outline-none bg-transparent"
-                placeholder="Asunto de su mensaje"
-                required
+                className="block w-full px-4 py-2.5 rounded-md focus:outline-none bg-transparent"
+                placeholder="Asunto de tu mensaje"
               />
             </div>
           </motion.div>
           
           <motion.div variants={formItem}>
-            <label className={`block text-sm font-medium mb-2 transition-colors ${focused === 'message' ? 'text-[#20284D]' : 'text-gray-700'}`}>
+            <label 
+              htmlFor="message"
+              className={`block text-sm font-medium mb-2 transition-colors ${focusedField === 'message' ? 'text-[#20284D]' : 'text-gray-700'}`}
+            >
               Mensaje
             </label>
-            <div className={`relative rounded-md shadow-sm border ${focused === 'message' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
+            <div className={`relative rounded-md shadow-sm border ${focusedField === 'message' ? 'border-[#20284D] ring-1 ring-[#20284D]' : 'border-gray-300'} transition-all`}>
               <textarea
+                id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 onFocus={() => handleFocus('message')}
                 onBlur={handleBlur}
-                className="block w-full px-4 py-3 rounded-md focus:outline-none bg-transparent"
-                rows={5}
-                placeholder="Escriba su mensaje aquí..."
+                className="block w-full px-4 py-2.5 rounded-md focus:outline-none bg-transparent min-h-[120px]"
+                placeholder="Escribe tu mensaje aquí..."
                 required
+                minLength={10}
               />
             </div>
           </motion.div>
           
-          <motion.div variants={formItem} className="pt-2">
+          <motion.div variants={formItem} className="pt-1">
             <motion.button
               type="submit"
               disabled={status === 'submitting'}
               className={`w-full py-3 px-6 rounded-md transition-all font-medium text-white ${
                 status === 'submitting'
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-[#20284D] hover:bg-opacity-90 shadow-md hover:shadow-lg'
+                  : 'bg-[#20284D] hover:bg-[#303f6d] shadow-md hover:shadow-lg'
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={status !== 'submitting' ? { scale: 1.02 } : {}}
+              whileTap={status !== 'submitting' ? { scale: 0.98 } : {}}
             >
               {status === 'submitting' ? (
                 <span className="flex items-center justify-center">
