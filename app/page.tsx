@@ -24,10 +24,6 @@ export default function Home() {
       </Head>
 
       <CatalogWebsite />
-      <AboutUs />
-      <ContactForm />
-      <ProductGrid />
-      <ContactForm />
     </>
   )
 }
