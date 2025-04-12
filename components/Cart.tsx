@@ -24,8 +24,9 @@ const Cart = () => {
     prevItemCount.current = itemCount;
   }, [itemCount]);
 
+  // Funciones para enviar correo y WhatsApp
   const sendToEmail = () => {
-    const emailAddress = "serviciotecnicokonikaminolta@gmail.com";
+    const emailAddress = "tmazqualitytoner@gmail.com";
     const subject = "Consulta de productos";
     const message = items.map((item) => `${item.name} (x${item.quantity})`).join("\n");
     const emailBody = `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`;

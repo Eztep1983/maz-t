@@ -6,7 +6,7 @@ const Footer = () => {
   const contactInfo = [
     {
       icon: <Phone className="text-blue-600" size={20} />,
-      text: "+57 (314) 74-883",
+      text: "+57 (314) 784-5883",
       href: "tel:+573147845883"
     },
     {

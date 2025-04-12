@@ -347,7 +347,7 @@ const ProductGrid = ({ category }: { category?: string }) => {
             </div>
 
             {/* Category Dropdown */}
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative bor" ref={dropdownRef}>
               <label className="block text-sm font-medium mb-1">Categoría</label>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}

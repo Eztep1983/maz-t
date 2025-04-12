@@ -1,10 +1,5 @@
 import Head from 'next/head'
 import CatalogWebsite from '@/components/CatalogWebsite'
-import AboutUs from '@/components/AboutUs'
-import TestimonialsSection from '@/components/testimonials'
-import ContactForm from '@/components/ContactForm'
-import ProductGrid from '@/components/ProductGrid'
-
 
 export default function Home() {
   return (
@@ -24,10 +19,6 @@ export default function Home() {
       </Head>
 
       <CatalogWebsite />
-      <AboutUs />
-      <ContactForm />
-      <ProductGrid />
-      <ContactForm />
     </>
   )
 }

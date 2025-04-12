@@ -41,8 +41,8 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
   const LOGO_URL = `${CLOUDINARY_BASE_URL}/${LOGO_PUBLIC_ID}`;
 
   const CONTACT_INFO = {
-    address: "Calle 21A #14-28, Pasto, Nariño, Colombia",
-    phone: "+57 3147985883",
+    address: "Calle 20 # 27-105, Las Cuadras Pasto, Nariño, Colombia",
+    phone: "+57 314-784-5883",
     email: "tmazqualitytoner@gmail.com",
     businessHours: {
       weekdays: "Lunes a Viernes: 8:00 AM - 6:00 PM",
@@ -183,7 +183,7 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
       >
-      <div className="relative w-28 h-28 md:w-32 md:h-32 border-4 border-gray-300 rounded-full">
+      <div className="relative w-28 h-28 md:w-32 md:h-32 border-4 border-gray-300 rounded-lg">
       <Image 
       src={LOGO_URL} 
       alt="Tmaz Quality Toner Logo" 
