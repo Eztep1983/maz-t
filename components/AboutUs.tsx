@@ -15,6 +15,8 @@ import {
 import { useState } from "react";
 import Image from "next/image";
 import React from "react";
+import Head from 'next/head'
+
 
 interface AboutUsProps {
   onContactClick?: () => void;
@@ -88,7 +90,7 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
   const HistoriaContent = () => (
     <>
       <p className="mb-4 leading-relaxed">
-        Somos una empresa distribuidora de Toner especializada en la venta de insumos y repuestos para 
+        Somos una empresa distribuidora de Toner ubicada en la ciudad de Pasto, Nariño-Colombia, especializada en la venta de insumos y repuestos para 
         fotocopiadoras e impresoras, incluyendo máquinas multifuncionales de las marcas 
         más reconocidas del mercado.
       </p>

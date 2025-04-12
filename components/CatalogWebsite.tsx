@@ -24,8 +24,8 @@ const CatalogWebsite = () => {
   // State
   const [activeSection, setActiveSection] = useState("about");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
-  const [screenWidth, setScreenWidth] = useState(0);
+  const [, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [, setScreenWidth] = useState(0);
   const [testimonialsPage, setTestimonialsPage] = useState(1);
 
   // Sections configuration
