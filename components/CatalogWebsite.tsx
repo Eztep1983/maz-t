@@ -33,7 +33,7 @@ const CatalogWebsite = () => {
     { id: "about", label: "Sobre Nosotros", icon: <Info size={20} /> },
     { id: "catalog", label: "Catálogo", icon: <ShoppingBag size={20} /> },
     { id: "testimonials", label: "Opiniones", icon: <MessageSquare size={20} /> },
-    { id: "contact", label: "Contacto", icon: <Phone size={20} /> },
+    { id: "contact", label: "Contactos", icon: <Phone size={20} /> },
   ], []);
 
   // Animation configuration

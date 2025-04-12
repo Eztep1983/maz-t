@@ -17,7 +17,8 @@ const Footer = () => {
     {
       icon: <MapPin className="text-blue-600" size={20} />,
       text: "San Juan De Pasto, Nariño Colombia",
-      href: "https
+      href: "https://www.google.com/maps/place/Servicio+T%C3%A9cnico+Konica/@1.2182379,-77.2789939,15z"
+
     }
   ];
 

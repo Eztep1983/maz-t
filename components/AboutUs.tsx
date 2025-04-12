@@ -25,9 +25,9 @@ type TabType = "historia" | "mision" | "equipo";
 const AboutUs = ({ onContactClick }: AboutUsProps) => {
   // Constants and configuration
   const IMAGES = [
-    "/images/Toners_entrada.jpeg",
-    "/images/Instalaciones1.jpeg",
     "/images/Instalaciones2.jpeg",
+    "/images/Instalaciones1.jpeg",
+    "/images/Toners_entrada.jpeg",
   ];
   
   const BRANDS = [
@@ -93,7 +93,7 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
         más reconocidas del mercado.
       </p>
       <p className="mb-4 leading-relaxed">
-        Fundada hace más de una década, nuestra empresa ha crecido constantemente gracias a la 
+        Fundada hace más de una década y con 20 años de experiencia en el sector, nuestra empresa ha crecido constantemente gracias a la 
         confianza de nuestros clientes y a nuestro compromiso con la calidad y el servicio.
       </p>
       <p className="leading-relaxed">
@@ -169,229 +169,232 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <motion.section 
-          className="text-center mb-16 flex flex-col md:flex-row items-center justify-center gap-6"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="relative w-28 h-28 md:w-32 md:h-32">
-            <Image 
-              src={LOGO_URL} 
-              alt="Tmaz Quality Toner Logo" 
-              fill
-              className="rounded-lg shadow-lg object-contain"
-              priority
-            />
-          </div>
-          <div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-Azul to-blue-700">
-                Tmaz Quality Toner
-              </span>
-            </h1>
-            <h2 className="text-xl md:text-2xl font-semibold text-gray-700 mb-2">
-              Toshiba Soporte Autorizado
-            </h2>
-            <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
-              Distribuidores de Toner, repuestos y consumibles para impresoras y fotocopiadoras.
-            </p>
-          </div>
-        </motion.section>
+    <div 
+      className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg py-12 px-4 sm:px-6 lg:px-8 relative"
+      style={{ backgroundImage: "url('/images/EntradaDerecha.jpeg')", backgroundSize: "1000px", backgroundPosition: "top", backgroundRepeat: "no-repeat" }}>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/70 to-white pointer-events-none"></div>
+      <div className="relative max-w-7xl mx-auto">
+      {/* Hero Section */}
+      <motion.section 
+      className="text-center mb-16 flex flex-col md:flex-row items-center justify-center gap-6"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7 }}
+      >
+      <div className="relative w-28 h-28 md:w-32 md:h-32 border-4 border-gray-300 rounded-full">
+      <Image 
+      src={LOGO_URL} 
+      alt="Tmaz Quality Toner Logo" 
+      fill
+      className="rounded-lg shadow-lg object-contain"
+      priority
+      />
+      </div>
+      <div>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+      <span className="bg-clip-text text-transparent bg-gradient-to-r from-Azul to-blue-700">
+      Tmaz Quality Toner
+      </span>
+      </h1>
+      <h2 className="text-xl md:text-2xl font-semibold text-gray-700 mb-2">
+      Toshiba Soporte Autorizado
+      </h2>
+      <p className="text-black text-lg max-w-3xl mx-auto leading-relaxed">
+      Distribuidores de Toner, repuestos y consumibles para impresoras y fotocopiadoras.
+      </p>
+      </div>
+      </motion.section>
 
-        {/* Main Content Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-16">
-          {/* Image Gallery */}
-          <motion.div 
-            className="lg:col-span-2"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <div className="grid grid-cols-2 gap-4">
-              {IMAGES.map((img, index) => (
-                <motion.div
-                  key={index}
-                  className={`relative rounded-lg overflow-hidden shadow-lg aspect-square ${
-                    index === 0 ? "col-span-2" : ""
-                  }`}
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.03 }}
-                >
-                  <Image
-                    src={img}
-                    alt={`Instalaciones Tmaz ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes={index === 0 ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 1024px) 50vw, 25vw"}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-          
-          {/* Company Info Tabs */}
-          <motion.div 
-            className="lg:col-span-3 bg-white rounded-xl shadow-md p-6"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-          >
-            {/* Tabs Navigation */}
-            <nav className="flex flex-wrap border-b border-gray-200 mb-6">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  className={`flex items-center mr-4 py-2 px-4 font-medium text-sm rounded-t-lg transition ${
-                    activeTab === tab.id 
-                    ? "text-blue-600 border-b-2 border-blue-600" 
-                    : "text-gray-500 hover:text-gray-700"
-                  }`}
-                  onClick={() => handleTabChange(tab.id as TabType)}
-                  aria-current={activeTab === tab.id ? "page" : undefined}
-                >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-            
-            {/* Tab Content */}
-            <motion.div
-              key={activeTab}
-              className="text-gray-700"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {TAB_CONTENT[activeTab]}
-            </motion.div>
-          </motion.div>
-        </div>
-        
-        {/* Brands Section */}
-        <motion.section 
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-        >
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
-            Marcas con las que Trabajamos
-          </h2>
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            {BRANDS.map((brand) => (
-              <motion.div
-                key={brand}
-                className="bg-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-md text-gray-700 font-medium"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {brand}
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+      {/* Main Content Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-16">
+      {/* Image Gallery */}
+      <motion.div 
+      className="lg:col-span-2"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      >
+      <div className="grid grid-cols-2 gap-4">
+      {IMAGES.map((img, index) => (
+      <motion.div
+      key={index}
+      className={`relative rounded-lg overflow-hidden shadow-lg ${
+      index === 0 ? "col-span-2 row-span-1 h-48" : "aspect-square"
+      }`}
+      variants={itemVariants}
+      whileHover={{ scale: 1.03 }}
+      >
+      <Image
+      src={img}
+      alt={`Instalaciones Tmaz ${index + 1}`}
+      fill
+      className="object-cover"
+      sizes={index === 0 ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 1024px) 50vw, 25vw"}
+      />
+      </motion.div>
+      ))}
+      </div>
+      </motion.div>
+      
+      {/* Company Info Tabs */}
+      <motion.div 
+      className="lg:col-span-3 bg-white rounded-xl shadow-md p-6"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.7, delay: 0.3 }}
+      >
+      {/* Tabs Navigation */}
+      <nav className="flex flex-wrap border-b border-gray-200 mb-6">
+      {TABS.map((tab) => (
+      <button
+      key={tab.id}
+      className={`flex items-center mr-4 py-2 px-4 font-medium text-sm rounded-t-lg transition ${
+      activeTab === tab.id 
+      ? "text-blue-600 border-b-2 border-blue-600" 
+      : "text-gray-500 hover:text-gray-700"
+      }`}
+      onClick={() => handleTabChange(tab.id as TabType)}
+      aria-current={activeTab === tab.id ? "page" : undefined}
+      >
+      <span className="mr-2">{tab.icon}</span>
+      {tab.label}
+      </button>
+      ))}
+      </nav>
+      
+      {/* Tab Content */}
+      <motion.div
+      key={activeTab}
+      className="text-gray-700"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      >
+      {TAB_CONTENT[activeTab]}
+      </motion.div>
+      </motion.div>
+      </div>
+      
+      {/* Brands Section */}
+      <motion.section 
+      className="mb-16"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.5 }}
+      >
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
+      Marcas con las que Trabajamos
+      </h2>
+      <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+      {BRANDS.map((brand) => (
+      <motion.div
+      key={brand}
+      className="bg-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-md text-gray-700 font-medium"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.98 }}
+      >
+      {brand}
+      </motion.div>
+      ))}
+      </div>
+      </motion.section>
 
-        {/* Contact Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {/* Map */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.7 }}
-          >
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-              <FaMapMarkerAlt className="text-red-500 mr-2" />
-              Nuestro punto de venta autorizado
-            </h2>
-            <div className="rounded-xl overflow-hidden shadow-lg aspect-video">
-              <iframe
-                title="Ubicación de Tmaz Quality Toner"
-                className="w-full h-full"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1994.45824409919!2d-77.27899399921704!3d1.2182379000000074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e2ed4870587a903%3A0x25fc52d9359c5f6e!2sServicio%20T%C3%A9cnico%20Konica!5e0!3m2!1ses-419!2sco!4v1739395425922!5m2!1ses-419!2sco"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
-            </div>
-          </motion.div>
-          
-          {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.7 }}
-          >
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Información de Contacto</h2>
-            <div className="bg-white rounded-xl shadow-md p-6 h-full">
-              <div className="space-y-4">
-                <ContactInfoItem 
-                  icon={<FaMapMarkerAlt className="text-blue-600" />}
-                  title="Dirección"
-                  content={CONTACT_INFO.address}
-                />
-                <ContactInfoItem 
-                  icon={<FaPhone className="text-blue-600" />}
-                  title="Teléfono"
-                  content={CONTACT_INFO.phone}
-                />
-                <ContactInfoItem 
-                  icon={<FaEnvelope className="text-blue-600" />}
-                  title="Correo Electrónico"
-                  content={CONTACT_INFO.email}
-                />
-                <ContactInfoItem 
-                  icon={<FaUsers className="text-blue-600" />}
-                  title="Horario de Atención"
-                  content={
-                    <>
-                      {CONTACT_INFO.businessHours.weekdays}<br />
-                      {CONTACT_INFO.businessHours.saturday}
-                    </>
-                  }
-                />
-              </div>
-            </div>
-          </motion.div>
-        </section>
+      {/* Contact Section */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      {/* Map */}
+      <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.7, delay: 0.7 }}
+      >
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+      <FaMapMarkerAlt className="text-red-500 mr-2" />
+      Nuestro punto de venta autorizado
+      </h2>
+      <div className="rounded-xl overflow-hidden shadow-lg aspect-video">
+      <iframe
+      title="Ubicación de Tmaz Quality Toner"
+      className="w-full h-full"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1994.45824409919!2d-77.27899399921704!3d1.2182379000000074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e2ed4870587a903%3A0x25fc52d9359c5f6e!2sServicio%20T%C3%A9cnico%20Konica!5e0!3m2!1ses-419!2sco!4v1739395425922!5m2!1ses-419!2sco"
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+      allowFullScreen
+      />
+      </div>
+      </motion.div>
+      
+      {/* Contact Info */}
+      <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.7, delay: 0.7 }}
+      >
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Información de Contacto</h2>
+      <div className="bg-white rounded-xl shadow-md p-6 h-full">
+      <div className="space-y-4">
+      <ContactInfoItem 
+      icon={<FaMapMarkerAlt className="text-blue-600" />}
+      title="Dirección"
+      content={CONTACT_INFO.address}
+      />
+      <ContactInfoItem 
+      icon={<FaPhone className="text-blue-600" />}
+      title="Teléfono"
+      content={CONTACT_INFO.phone}
+      />
+      <ContactInfoItem 
+      icon={<FaEnvelope className="text-blue-600" />}
+      title="Correo Electrónico"
+      content={CONTACT_INFO.email}
+      />
+      <ContactInfoItem 
+      icon={<FaUsers className="text-blue-600" />}
+      title="Horario de Atención"
+      content={
+      <>
+        {CONTACT_INFO.businessHours.weekdays}<br />
+        {CONTACT_INFO.businessHours.saturday}
+      </>
+      }
+      />
+      </div>
+      </div>
+      </motion.div>
+      </section>
 
-        {/* Social Media Section */}
-        <motion.section 
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.9 }}
-        >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Síguenos en Redes Sociales</h2>
-          <div className="flex justify-center gap-6">
-            <SocialIcon 
-              href={SOCIAL_LINKS.facebook}
-              icon={<FaFacebook />}
-              color="text-blue-600"
-              hoverColor="hover:bg-blue-50"
-            />
-            <SocialIcon 
-              href={SOCIAL_LINKS.instagram}
-              icon={<FaInstagram />}
-              color="text-pink-600"
-              hoverColor="hover:bg-pink-50"
-            />
-          </div>
-          
-          <motion.button
-            className="mt-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleContactClick}
-            aria-label="Contáctanos"
-          >
-            Contáctanos Ahora
-          </motion.button>
-        </motion.section>
+      {/* Social Media Section */}
+      <motion.section 
+      className="text-center"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.9 }}
+      >
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Síguenos en Redes Sociales</h2>
+      <div className="flex justify-center gap-6">
+      <SocialIcon 
+      href={SOCIAL_LINKS.facebook}
+      icon={<FaFacebook />}
+      color="text-blue-600"
+      hoverColor="hover:bg-blue-50"
+      />
+      <SocialIcon 
+      href={SOCIAL_LINKS.instagram}
+      icon={<FaInstagram />}
+      color="text-pink-600"
+      hoverColor="hover:bg-pink-50"
+      />
+      </div>
+      
+      <motion.button
+      className="mt-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={handleContactClick}
+      aria-label="Contáctanos"
+      >
+      Contáctanos Ahora
+      </motion.button>
+      </motion.section>
       </div>
     </div>
   );
