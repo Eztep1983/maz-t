@@ -259,13 +259,10 @@ const CatalogWebsite = () => {
         className="max-w-6xl mx-auto px-4 py-8 flex-grow mt-16"
         style={{ color: MAIN_COLOR }}
       >
-        <AnimatePresence mode="wait">
           <motion.div key={activeSection} {...motionProps}>
             {renderSectionContent()}
           </motion.div>
-        </AnimatePresence>
       </main>
-
       <Footer />
     </div>
   );
