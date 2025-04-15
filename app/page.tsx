@@ -7,8 +7,9 @@ export default function Home() {
       <Head>
         <title>Venta de Tóner, Tinta y Repuestos | Servicio Técnico en Colombia</title>
         <meta name="description" content="Tienda especializada en tóner, tinta, consumibles y repuestos para impresoras. Servicio técnico especializado. Ubicados en Pasto Envíos en toda Colombia." />
-        <meta name="keywords" content="toner, toner pasto,toner nariño, toner colombia, 
-        fotocopiadoras toshiba pasto, kyocera, Epson pasto, Hp pasto, Tintas impresora pasto, tintas pasto, 
+        <meta name="keywords" content="toner, toner pasto,toner nariño, toner colombia, repuestos, repuestos pasto, repuestos nariño, repuestos colombia,
+        fotocopiadoras toshiba pasto, kyocera, Epson pasto, Hp pasto, Tintas impresora pasto, tintas pasto, tintas nariño, tintas colombia, toner generico pasto, toner generico nariño, toner generico colombia,
+        toner original pasto, toner original nariño, toner original colombia, toner generico, toner original, toner generico de calidad, toner generico de alta calidad, toner generico de alta calidad pasto, toner generico de alta calidad nariño, toner generico de alta calidad colombia,
         repuestos para impresora, comprar tinta impresoras, toners, tintas originales impresoras, tintas genericas, tintas genericas impresoras,
          pasto, servicio tecnico toshiba pasto, toner kilos, toner color, cilindros, cuchillas fotocopiadoras, impresoras hp , mantenimiento, recarga de tinta, recarga hp, recarga de toner
         toner ricoh pasto, toner ricoh, Minolta, toner generico de calidad, servicio tecnico especializado
@@ -17,7 +18,6 @@ export default function Home() {
         <meta property="og:title" content="Insumos y Repuestos para Impresoras | Tóner y Tinta" />
         <meta property="og:description" content="Expertos en insumos para impresoras. Calidad, servicio técnico y repuestos garantizados." />
       </Head>
-
       <CatalogWebsite />
     </>
   )

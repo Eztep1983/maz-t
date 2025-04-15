@@ -15,7 +15,7 @@ import {
 import { useState } from "react";
 import Image from "next/image";
 import React from "react";
-import Head from 'next/head'
+import Carousel from "./Carousel";
 
 
 interface AboutUsProps {
@@ -26,20 +26,17 @@ type TabType = "historia" | "mision" | "equipo";
 
 const AboutUs = ({ onContactClick }: AboutUsProps) => {
   // Constants and configuration
-  const IMAGES = [
-    "/images/Instalaciones2.jpeg",
-    "/images/Instalaciones1.jpeg",
-    "/images/Toners_entrada.jpeg",
-  ];
-  
+
   const BRANDS = [
-    "Toshiba", "Konica Minolta", "Canon", "HP", "Ricoh", "Epson", "Samsung"
+    "/images/toshiba_logo.png",
+    "/images/ricoh_logo.jpg",
+    "/images/Epson_logo.jpg", 
+    "/images/Canon_logo.png",
+    "/images/Minolta_logo.jpg",
+    "/images/samsung_logo.jpg",
   ];
 
-  const CLOUDINARY_BASE_URL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
-  const LOGO_PUBLIC_ID = "company-items/logotipoTmz";
-  const LOGO_URL = `${CLOUDINARY_BASE_URL}/${LOGO_PUBLIC_ID}`;
-
+  const LOGO_URL = "/images/Logo.jpeg";
   const CONTACT_INFO = {
     address: "Calle 20 # 27-105, Las Cuadras Pasto, Nariño, Colombia",
     phone: "+57 314-784-5883",
@@ -69,14 +66,6 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
     }
   };
   
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.5 }
-    }
-  };
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -183,14 +172,14 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
       >
-      <div className="relative w-28 h-28 md:w-32 md:h-32 border-4 border-gray-300 rounded-lg">
-      <Image 
-      src={LOGO_URL} 
-      alt="Tmaz Quality Toner Logo" 
-      fill
-      className="rounded-lg shadow-lg object-contain"
-      priority
-      />
+      <div className="relative w-40 h-40 border-4 border-gray-300 rounded-lg">
+        <Image 
+          src={LOGO_URL} 
+          alt="Tmaz Quality Toner Logo" 
+          fill
+          className="rounded-lg shadow-lg object-cover"
+          priority
+        />
       </div>
       <div>
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
@@ -216,28 +205,33 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
       initial="hidden"
       animate="visible"
       >
-      <div className="grid grid-cols-2 gap-4">
-      {IMAGES.map((img, index) => (
-      <motion.div
-      key={index}
-      className={`relative rounded-lg overflow-hidden shadow-lg ${
-      index === 0 ? "col-span-2 row-span-1 h-48" : "aspect-square"
-      }`}
-      variants={itemVariants}
-      whileHover={{ scale: 1.03 }}
-      >
-      <Image
-      src={img}
-      alt={`Instalaciones Tmaz ${index + 1}`}
-      fill
-      className="object-cover"
-      sizes={index === 0 ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 1024px) 50vw, 25vw"}
-      />
-      </motion.div>
-      ))}
+      <div className="mx-auto bg-Azul rounded-xl shadow-md overflow-hidden">
+          <Carousel/>
       </div>
+        <motion.div
+          className="bg-white px-5 py-2.5 sm:px-6 shadow-md flex items-center gap-4"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+        >
+            <div className="text-center font-sans text-xl font-bold text-gray-800 mb-2">
+            Nuestro Toner
+            </div>
+        <div className="mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+        
+        <Image 
+              src="/images/Toners_consecutivo.png"
+              alt="Toner Toshiba Serie 15"
+              width={400}
+              height={400}
+              className="rounded-lg shadow-md mt-4"
+            />
+          </div>
+        </motion.div>
+        <br />
+        <div className="text-gray-500 text-xs leading-relaxed">
+            Más información disponible en el catálogo de productos ubicado en la parte superior derecha.
+        </div>
       </motion.div>
-      
       {/* Company Info Tabs */}
       <motion.div 
       className="lg:col-span-3 bg-white rounded-xl shadow-md p-6"
@@ -288,14 +282,14 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
       Marcas con las que Trabajamos
       </h2>
       <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-      {BRANDS.map((brand) => (
+      {BRANDS.map((src, index) => (
       <motion.div
-      key={brand}
-      className="bg-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-md text-gray-700 font-medium"
+      key={index}
+      className="bg-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-md"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.98 }}
       >
-      {brand}
+        <img src={src} alt={`Brand ${index}`} className="h-5 w-auto" />
       </motion.div>
       ))}
       </div>

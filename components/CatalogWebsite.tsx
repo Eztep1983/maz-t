@@ -16,9 +16,7 @@ import TestimonialsSection from "./testimonials";
 
 // Constants
 const MAIN_COLOR = "rgb(32, 40, 77)";
-const CLOUDINARY_BASE_URL = "https://res.cloudinary.com/dzqm5gmyg/image/upload";
-const LOGO_PUBLIC_ID = "company-items/logotipoTmz";
-const LOGO_URL = `${CLOUDINARY_BASE_URL}/${LOGO_PUBLIC_ID}`;
+const LOGO_URL = "/images/Logo.jpeg";
 
 const CatalogWebsite = () => {
   // State

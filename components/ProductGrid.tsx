@@ -304,6 +304,7 @@ const ProductGrid = ({ category }: { category?: string }) => {
     setSearchTerm('');
     setSortOption("featured");
   }, []);
+  
 
   // UI Components
   const ProductSkeleton = () => (
