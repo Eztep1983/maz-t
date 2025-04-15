@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
   title: "Toners Y Suministros",
-  description: "",
+  description: "Distribuidores de toner en pasto y para toda colombia, fotocopiadoras, impresoras",
 };
 
 export default function RootLayout({
