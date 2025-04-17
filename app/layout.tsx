@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
   title: "Tmaz Quality Toner Pasto | Toner & Suministros para Impresoras",
-  description: "Your trusted distributor of toner and printer supplies, including Toshiba, Ricoh, Lexmark, and Epson. Serving Pasto, Nariño, and all of Colombia with quality and reliability.",
+  description: "Tu distribuidor de confianza, incluyendo Toshiba, Ricoh, Lexmark, y Epson. Ubicados en Pasto, Nariño, evios a toda Colombia with con calidad y excelencia.",
   keywords: ["toner", "toner pasto", "toner nariño", "toner colombia", "repuestos impresoras", "fotocopiadoras toshiba", "kyocera", "Epson pasto", "Hp pasto", 
 "Tintas impresora", "tintas originales", "tintas genericas", "toner generico", "toner original", "toner de calidad", "toner de alta calidad", 
 "comprar tinta impresoras", "mantenimiento impresoras", "recarga de tinta", "recarga de toner", "servicio técnico especializado", 
