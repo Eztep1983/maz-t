@@ -17,7 +17,6 @@ import Image from "next/image";
 import React from "react";
 import Carousel from "./Carousel";
 
-
 interface AboutUsProps {
   onContactClick?: () => void;
 }
@@ -213,9 +212,11 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
         >
-            <div className="text-center font-sans text-xl font-bold text-gray-800 mb-2">
+          <div
+            className="text-center font-sans text-xl font-bold text-gray-800 mb-2 cursor-pointer"
+          >
             Nuestro Toner
-            </div>
+          </div>
         <div className="mx-auto bg-white rounded-lg shadow-md overflow-hidden">
         
         <Image 
