@@ -48,6 +48,11 @@ const CatalogWebsite = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  const handleProductclick = useCallback(() => {
+    setActiveSection("catalog");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const toggleMenu = useCallback(() => {
     setMenuOpen(prev => !prev);
   }, []);
@@ -106,7 +111,7 @@ const CatalogWebsite = () => {
         return <ContactForm />;
       case "about":
       default:
-        return <AboutUs onContactClick={handleContactClick} />;
+        return <AboutUs onContactClick={handleContactClick} onProductClick={handleProductclick}/>;
     }
   };
 
@@ -257,7 +262,7 @@ const CatalogWebsite = () => {
         className="max-w-6xl mx-auto px-4 py-8 flex-grow mt-16"
         style={{ color: MAIN_COLOR }}
       >
-          <motion.div key={activeSection} {...motionProps}>
+          <motion.div key={activeSection} {...motionProps} className="flex flex-col items-center">
             {renderSectionContent()}
           </motion.div>
       </main>

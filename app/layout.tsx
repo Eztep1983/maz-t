@@ -16,7 +16,6 @@ export const metadata: Metadata = {
 "distribuidor autorizado de toner", "insumos impresoras", "fotocopiadoras", "Colombia", "Pasto", "Nariño", "servicio técnico", "repuestos impresoras",
 "toner kilos", "toner color", "cilindros", "cuchillas fotocopiadoras", "impresoras hp"],
   authors: [{ name: "Tmaz Quality Toner", url: "https://www.tmazqualitytoners.com.co/" }],
-  viewport: "width=device-width, initial-scale=1.0",
   robots: "index, follow",
 };
 

@@ -19,11 +19,12 @@ import Carousel from "./Carousel";
 
 interface AboutUsProps {
   onContactClick?: () => void;
+  onProductClick?: ()=> void; 
 }
 
 type TabType = "historia" | "mision" | "equipo";
 
-const AboutUs = ({ onContactClick }: AboutUsProps) => {
+const AboutUs = ({ onContactClick, onProductClick }: AboutUsProps) => {
   // Constants and configuration
 
   const BRANDS = [
@@ -74,6 +75,9 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
     onContactClick?.();
   };
 
+  const handleProductclick = () => {
+    onProductClick?.(); 
+  };
   // Tab content components
   const HistoriaContent = () => (
     <>
@@ -207,18 +211,16 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
       <div className="mx-auto bg-Azul rounded-xl shadow-md overflow-hidden">
           <Carousel/>
       </div>
-        <motion.div
+      <motion.div
           className="bg-white px-5 py-2.5 sm:px-6 shadow-md flex items-center gap-4"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
+          onClick={handleProductclick}
         >
-          <div
-            className="text-center font-sans text-xl font-bold text-gray-800 mb-2 cursor-pointer"
-          >
+          <div className="text-center font-sans text-xl font-bold text-gray-800 mb-2 cursor-pointer">
             Nuestro Toner
           </div>
         <div className="mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        
         <Image 
               src="/images/Toners_consecutivo.png"
               alt="Toner Toshiba Serie 15"
@@ -229,8 +231,21 @@ const AboutUs = ({ onContactClick }: AboutUsProps) => {
           </div>
         </motion.div>
         <br />
-        <div className="text-gray-500 text-xs leading-relaxed">
-            Más información disponible en el catálogo de productos ubicado en la parte superior derecha.
+        <div className="text-gray-500 text-xs leading-relaxed flex flex-col items-center">
+        <motion.button
+            className="mt-10 text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all"
+            style={{
+              background: 'linear-gradient(to right, #f7fd00,#2563eb, #000000)', 
+            }}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.99 }}
+            onClick={handleProductclick}
+            aria-label="Catalogo de Productos"
+          >
+            Abrir Catálogo
+        </motion.button>
+          <br />
+          Más información disponible en el menú en la parte superior derecha.
         </div>
       </motion.div>
       {/* Company Info Tabs */}

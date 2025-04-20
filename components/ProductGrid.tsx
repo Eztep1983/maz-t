@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { CldImage } from 'next-cloudinary';
 import { useCart } from './CartContext';
-import { FaWhatsapp, FaTimes, FaSearch, FaChevronDown, FaFilter, FaStar } from 'react-icons/fa';
+import { FaWhatsapp, FaTimes, FaSearch, FaChevronDown, FaFilter, FaStar, FaShoppingBasket } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../services/firebaseConfig'; 
 import { collection, getDocs, query } from 'firebase/firestore';
@@ -94,7 +94,7 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
           
           <div className="md:w-1/2">
             <div className="flex items-center mb-2">
-              <h2 className="text-xl font-bold">{product.name}</h2>
+              <h2 className="text-xm font-bold">{product.name}</h2>
               {product.featured && (
                 <span className="ml-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded flex items-center">
                   <FaStar className="inline-block mr-1" size={10} />
@@ -129,12 +129,16 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
                 </div>
               </div>
             )}
-            
+
             <div className="mb-6">
               <h3 className="text-sm font-medium mb-1">Descripción:</h3>
-              <p className="text-gray-700 whitespace-pre-line">{product.description}</p>
+              <div className="text-gray-700 text-sm space-y-1">
+                {product.description.split('\n').map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => {
@@ -319,9 +323,9 @@ const ProductGrid = ({ category }: { category?: string }) => {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 shadow-2xl shadow-black/30">
       {/* Filters Section */}
-      <div className="mb-6 bg-white rounded-lg shadow p-4">
+      <div className="mb-6 bg-gray-200 rounded-lg shadow-2xl shadow-black/30 p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Filtrar Productos</h2>
           <button 
@@ -346,9 +350,8 @@ const ProductGrid = ({ category }: { category?: string }) => {
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-
-            {/* Category Dropdown */}
-            <div className="relative bor" ref={dropdownRef}>
+                      {/* Category Dropdown */}
+                      <div className="relative bor " ref={dropdownRef}>
               <label className="block text-sm font-medium mb-1">Categoría</label>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -378,7 +381,6 @@ const ProductGrid = ({ category }: { category?: string }) => {
                 </div>
               )}
             </div>
-
             {/* Tags */}
             {uniqueTags.length > 0 && (
               <div>
@@ -400,7 +402,9 @@ const ProductGrid = ({ category }: { category?: string }) => {
                 </div>
               </div>
             )}
+            
           </div>
+          
         )}
       </div>
 
@@ -439,7 +443,7 @@ const ProductGrid = ({ category }: { category?: string }) => {
           {filteredProducts.map(product => (
             <motion.div
               key={product.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl hover:shadow-black/20 transition-shadow"
               whileHover={{ y: -5 }}
             >
               <div className="relative">
@@ -460,7 +464,7 @@ const ProductGrid = ({ category }: { category?: string }) => {
               
               <div className="p-4">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-lg">{product.name}</h3>
+                  <h3 className="font-semibold text-xm">{product.name}</h3>
                   <span className={`text-xs px-2 py-1 rounded ${
                     product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                   }`}>
@@ -484,26 +488,37 @@ const ProductGrid = ({ category }: { category?: string }) => {
                       </span>
                     ))}
                   </div>
-                )}
-                
+                )}      
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={() => handleWhatsAppConsult(product.name)}
+                    className="flex-1 bg-orange-400 hover:bg-orange-600 text-white py-2 px-3 rounded-lg text-sm transition-colors"
+                    disabled={!product.inStock}
+                  >
+                    Comprar Ahora
+                  </button>
+                </div>
+          
                 <div className="flex gap-2 mt-4">
                   <button
                     onClick={() => setSelectedProduct(product)}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-3 rounded-lg text-sm transition-colors"
+                    className="flex-1 bg-gray-200 hover:bg-gray-200 text-gray-800 py-2 px-3 rounded-lg text-sm transition-colors shadows-2xl shadow-black/50"
                   >
                     Detalles
                   </button>
                   <button
-                    onClick={() => addToCart({
-                      id: getNumericId(product.id),
-                      name: product.name,
-                      quantity: 1,
-                      price: 0
-                    })}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm transition-colors"
+                    onClick={() =>
+                      addToCart({
+                        id: getNumericId(product.id),
+                        name: product.name,
+                        quantity: 1,
+                        price: 0,
+                      })
+                    }
+                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm transition-colors disabled:opacity-50"
                     disabled={!product.inStock}
                   >
-                    Añadir
+                    Añadir <FaShoppingBasket />
                   </button>
                 </div>
               </div>
