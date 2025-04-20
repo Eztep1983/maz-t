@@ -231,13 +231,13 @@ const AboutUs = ({ onContactClick, onProductClick }: AboutUsProps) => {
           </div>
         </motion.div>
         <br />
-        <div className="text-gray-500 text-xs leading-relaxed flex flex-col items-center">
+        <div className="text-gray-500 text-xl leading-relaxed flex flex-col items-center">
         <motion.button
-            className="mt-10 text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all"
+            className="mt-10 text-white font-medium px-20 py-6 rounded-full shadow-lg hover:shadow-xl transition-all"
             style={{
               background: 'linear-gradient(to right, #f7fd00,#2563eb, #000000)', 
             }}
-            whileHover={{ scale: 1.15 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.99 }}
             onClick={handleProductclick}
             aria-label="Catalogo de Productos"
