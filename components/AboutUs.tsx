@@ -231,9 +231,9 @@ const AboutUs = ({ onContactClick, onProductClick }: AboutUsProps) => {
           </div>
         </motion.div>
         <br />
-        <div className="text-gray-500 text-xl leading-relaxed flex flex-col items-center">
+        <div className="text-gray-500 text-xm leading-relaxed flex flex-col items-center">
         <motion.button
-            className="mt-10 text-white font-medium px-20 py-6 rounded-full shadow-lg hover:shadow-xl transition-all"
+            className="mt-10 text-white font-medium px-20 py-4 rounded-full shadow-lg hover:shadow-xl transition-all"
             style={{
               background: 'linear-gradient(to right, #f7fd00,#2563eb, #000000)', 
             }}
@@ -245,7 +245,7 @@ const AboutUs = ({ onContactClick, onProductClick }: AboutUsProps) => {
             Abrir Catálogo
         </motion.button>
           <br />
-          Más información disponible en el menú en la parte superior derecha.
+          <div className="text-gray-500 text-xs flex flex-col items-center">Más información disponible en el menú en la parte superior derecha. </div>
         </div>
       </motion.div>
       {/* Company Info Tabs */}

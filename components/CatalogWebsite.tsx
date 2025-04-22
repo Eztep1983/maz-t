@@ -6,7 +6,7 @@ import { Menu, X, ShoppingBag, MessageSquare, Phone, Info } from "lucide-react";
 import Image from "next/image";
 import { onAuthStateChanged } from "firebase/auth";
 import { User as FirebaseUser } from 'firebase/auth';
-import { auth } from "@/services/firebaseConfig";
+import { auth } from "../services/firebaseConfig";
 import Footer from "./Footer";
 import ProductGrid from "./ProductGrid";
 import ContactForm from "./ContactForm";

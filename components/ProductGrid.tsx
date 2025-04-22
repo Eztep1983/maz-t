@@ -7,6 +7,7 @@ import { FaWhatsapp, FaTimes, FaSearch, FaChevronDown, FaFilter, FaStar, FaShopp
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../services/firebaseConfig'; 
 import { collection, getDocs, query } from 'firebase/firestore';
+import { useDebounce } from 'use-debounce';
 
 interface Product {
   id: string;
@@ -45,6 +46,7 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
     }
     return Math.abs(hash);
   }, []);
+  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -82,8 +84,9 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
         </button>
         
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="md:w-1/2 flex justify-center items-center">
+          <div className="md:w-1/2 flex justify-center items-center border rounded-lg shadow-2xl">
             <CldImage
+              quality="auto"
               width="300" 
               height="300"  
               src={product.imagePublicId}
@@ -174,6 +177,8 @@ const ProductDetailModal = ({ product, onClose }: ProductDetailModalProps) => {
 
 const ProductGrid = ({ category }: { category?: string }) => {
   // State management
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage, setProductsPerPage] = useState(6);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
   const [showInStock, setShowInStock] = useState(false);
@@ -181,10 +186,12 @@ const ProductGrid = ({ category }: { category?: string }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [searchTerm, setSearchTerm] = useDebounce(searchInput, 500);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+ 
   
   const { addToCart } = useCart();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -278,6 +285,25 @@ const ProductGrid = ({ category }: { category?: string }) => {
       });
   }, [products, selectedCategory, showInStock, selectedTags, searchTerm, sortOption]);
 
+  //Paginated Products 
+  const paginatedProducts = useMemo(() => {
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    return filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  }, [filteredProducts, currentPage, productsPerPage]);
+
+  
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredProducts.length / productsPerPage);
+  }, [filteredProducts, productsPerPage]);
+
+  const goToPage = useCallback((pageNumber: number) => {
+    setCurrentPage(Math.max(1, Math.min(pageNumber, totalPages)));
+    // Opcional: hacer scroll hacia arriba cuando cambie de página
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [totalPages]);
+
+
   // Event handlers
   const handleWhatsAppConsult = useCallback((productName: string) => {
     const message = encodeURIComponent(`Hola, estoy interesado en el producto: ${productName}`);
@@ -307,8 +333,8 @@ const ProductGrid = ({ category }: { category?: string }) => {
     setSelectedTags([]);
     setSearchTerm('');
     setSortOption("featured");
+    setCurrentPage(1); // Resetear a la primera página
   }, []);
-  
 
   // UI Components
   const ProductSkeleton = () => (
@@ -321,8 +347,114 @@ const ProductGrid = ({ category }: { category?: string }) => {
       </div>
     </div>
   );
+// Componente de paginación
+const Pagination = () => {
+  // No mostrar paginación si hay solo una página
+  if (totalPages <= 1) return null;
+  
+  // Determinar qué botones de página mostrar
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5; // Ajusta según preferencias
+    
+    // Siempre incluir la primera página
+    pages.push(1);
+    
+    // Agregar páginas intermedias
+    if (currentPage > 3) {
+      pages.push('...');
+    }
+    
+    // Páginas alrededor de la actual
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+      if (!pages.includes(i) && i > 1 && i < totalPages) {
+        pages.push(i);
+      }
+    }
+    
+    // Agregar ellipsis si hay un salto
+    if (currentPage < totalPages - 2) {
+      pages.push('...');
+    }
+    
+    // Siempre incluir la última página si hay más de una
+    if (totalPages > 1) {
+      pages.push(totalPages);
+    }
+    
+    return pages;
+  };
+  
+  return (
+    <div className="flex justify-center items-center mt-8 space-x-1">
+      {/* Botón Anterior */}
+      <button
+        onClick={() => goToPage(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Página anterior"
+      >
+        &laquo;
+      </button>
+      
+      {/* Botones de páginas */}
+      {getPageNumbers().map((page, index) => (
+        typeof page === 'number' ? (
+          <button
+            key={index}
+            onClick={() => goToPage(page)}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === page
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            {page}
+          </button>
+        ) : (
+          <span key={index} className="px-2 py-1">
+            {page}
+          </span>
+        )
+      ))}
+      
+      {/* Botón Siguiente */}
+      <button
+        onClick={() => goToPage(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Página siguiente"
+      >
+        &raquo;
+      </button>
+    </div>
+  );
+};
+
+//Selector de productos por pagina 
+const PerPageSelector = () => (
+  <div className="flex items-center gap-2">
+    <label htmlFor="perPage" className="text-sm text-gray-600">
+      Mostrar:
+    </label>
+    <select
+      id="perPage"
+      value={productsPerPage}
+      onChange={(e) => {
+        setProductsPerPage(Number(e.target.value));
+        setCurrentPage(1); // Reiniciar a la primera página al cambiar
+      }}
+      className="border rounded-lg px-2 py-1 text-sm"
+    >
+      <option value="6">6</option>
+      <option value="12">12</option>
+      <option value="24">24</option>
+    </select>
+  </div>
+);
 
   return (
+    
     <div className="container mx-auto px-4 py-8 shadow-2xl shadow-black/30">
       {/* Filters Section */}
       <div className="mb-6 bg-gray-200 rounded-lg shadow-2xl shadow-black/30 p-4">
@@ -340,22 +472,22 @@ const ProductGrid = ({ category }: { category?: string }) => {
         {showFilters && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
-            <div className="md:col-span-2 relative">
+            <div className="md:col-span-2 relative shadow-md rounded-lg mb-4">
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
               <input
                 type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Buscar productos..."
                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
                       {/* Category Dropdown */}
-                      <div className="relative bor " ref={dropdownRef}>
+            <div className="relative bor " ref={dropdownRef}>
               <label className="block text-sm font-medium mb-1">Categoría</label>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full flex justify-between items-center px-4 py-2 border rounded-lg bg-white"
+                className="w-full flex justify-between items-center px-4 py-2 border rounded-lg bg-white shadow-md rounded-lg mb-4"
               >
                 <span>{selectedCategory || 'Todas'}</span>
                 <FaChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -404,15 +536,17 @@ const ProductGrid = ({ category }: { category?: string }) => {
             )}
             
           </div>
-          
         )}
       </div>
 
       {/* Results Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <p className="text-sm text-gray-600">
-          Mostrando {filteredProducts.length} de {products.length} productos
-        </p>
+      <div className="flex items-center gap-4">
+          <p className="text-sm text-gray-600">
+            Mostrando {Math.min(productsPerPage, filteredProducts.length)} de {filteredProducts.length} productos
+          </p>
+          <PerPageSelector />
+        </div>
         <div className="flex items-center gap-2 mt-2 md:mt-0">
           <label htmlFor="sort" className="text-sm text-gray-600">Ordenar por:</label>
           <select
@@ -440,7 +574,7 @@ const ProductGrid = ({ category }: { category?: string }) => {
         </div>
       ) : filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map(product => (
+          {paginatedProducts.map(product => (
             <motion.div
               key={product.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl hover:shadow-black/20 transition-shadow"
@@ -453,6 +587,7 @@ const ProductGrid = ({ category }: { category?: string }) => {
                   src={product.imagePublicId}
                   alt={product.name}
                   className="w-full h-48 object-contain"
+                  quality="auto"
                 />
                 {product.featured && (
                   <div className="absolute top-2 left-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded flex items-center">
@@ -524,7 +659,11 @@ const ProductGrid = ({ category }: { category?: string }) => {
               </div>
             </motion.div>
           ))}
+          <div className="flex justify-center gap-4">
+            <Pagination />
+          </div>
         </div>
+        
       ) : (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-600 mb-4">No se encontraron productos</p>
