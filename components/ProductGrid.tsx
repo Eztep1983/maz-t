@@ -662,7 +662,7 @@ const PerPageSelector = () => (
   
               <p className="text-gray-700 text-sm mt-2 line-clamp-2">{product.description}</p>
   
-              {product.tags?.length > 0 && (
+              {Array.isArray(product.tags) && product.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {product.tags.slice(0, 3).map(tag => (
                     <span key={tag} className="text-xs bg-gray-100 px-2 py-1 rounded">
@@ -671,7 +671,7 @@ const PerPageSelector = () => (
                   ))}
                 </div>
               )}
-  
+
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={() => handleWhatsAppConsult(product.name)}
