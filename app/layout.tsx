@@ -4,7 +4,7 @@ import { CartProvider } from '@/components/CartContext'
 import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
-  title: "Tmaz Quality Toner Pasto | Toner & Suministros para Impresoras",
+  title: "Tmaz Toners de Calidad Pasto y Colombia | Toner & Suministros para Impresoras",
   description: "Tu distribuidor de confianza, incluyendo Toshiba, Ricoh, Lexmark, y Epson. Ubicados en Pasto, Nariño, evios a toda Colombia with con calidad y excelencia.",
   icons: {
     icon: '/favicon.ico',

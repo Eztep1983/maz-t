@@ -37,7 +37,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   sortOptions = ["date", "rating", "verified"],
   initialSortBy = "date",
   className = "",
-  id = "testimonials-section",
+  id = "comments",
   maxQueryLimit = 100,
   moderationRequired = true,
 }) => {
@@ -476,14 +476,16 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
 
   // Pagination function
   const paginate = useCallback((pageNumber: number) => {
-    // Apply page change
+    // Cambiar de página
     setCurrentPage(pageNumber);
-    
-    // Optional: Scroll to component only if standalone or explicitly requested
-    if (isStandalone && document.getElementById(id)) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+    // Scroll al contenedor de comentarios
+    const commentSection = document.getElementById('comments');
+    if (commentSection) {
+      commentSection.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [id, isStandalone, setCurrentPage]);
+  }, [setCurrentPage]);
+  
 
   // Handle form field changes with debounce
   const handleInputChange = debounce((field: string, value: string | number) => {
