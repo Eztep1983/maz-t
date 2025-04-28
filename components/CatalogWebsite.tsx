@@ -25,6 +25,7 @@ const CatalogWebsite = () => {
   const [, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [, setScreenWidth] = useState(0);
   const [testimonialsPage, setTestimonialsPage] = useState(1);
+  
 
   // Sections configuration
   const sections = useMemo(() => [
