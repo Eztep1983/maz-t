@@ -15,8 +15,8 @@ interface Review {
   date?: Timestamp;
   verified?: boolean;
   ipAddress?: string;
-  approved?: boolean;  // Added to match rules
-  spam?: boolean;      // Added to match rules
+  approved?: boolean;  
+  spam?: boolean;      
 }
 
 interface TestimonialsSectionProps {
@@ -77,12 +77,12 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const RATE_LIMIT_PERIOD_HOURS = 24;
   const MAX_SUBMISSIONS_PER_PERIOD = 3;
 
-  // Function to sanitize text
+  // Sanitizar el texto
   const sanitizeText = useCallback((text: string): string => {
     return DOMPurify.sanitize(text.trim().substring(0, MAX_REVIEW_LENGTH));
   }, []);
 
-  // Get user's IP address (for rate limiting purposes)
+  // Obtener IP del usuari (para poder hacer el rate limit)
   const getUserIp = useCallback(async (): Promise<string> => {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
@@ -94,10 +94,10 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     }
   }, []);
 
-  // Modified rate limit check that works with the new security rules
+  //Verificar el rate limit por dirección IP
   const checkRateLimit = useCallback(async (ipAddress: string): Promise<{ allowed: boolean, remaining: number, resetTime?: Date }> => {
     try {
-      // Use a dedicated rate limits collection instead of querying reviews
+      // Usar rate limits dedicados en una collection en lugar de hacer querys a las reviews
       const rateLimitRef = doc(db, 'rateLimits', ipAddress);
       const rateLimitDoc = await getDoc(rateLimitRef);
       
@@ -107,7 +107,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         const data = rateLimitDoc.data();
         const resetTime = data.resetTime.toDate();
         
-        // If reset time has passed, reset the counter
+        // Si el reset time paso, se crea otro
         if (resetTime < now) {
           // Create new limit period
           const newResetTime = new Date(now);
@@ -126,7 +126,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           };
         }
         
-        // Check if under limit
+        // Verificar si esta debajo del limite
         const submissionCount = data.count || 0;
         const remaining = MAX_SUBMISSIONS_PER_PERIOD - submissionCount;
         
@@ -136,7 +136,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           resetTime: resetTime
         };
       } else {
-        // First submission for this IP
         const resetTime = new Date(now);
         resetTime.setHours(now.getHours() + RATE_LIMIT_PERIOD_HOURS);
         
@@ -162,7 +161,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     }
   }, [RATE_LIMIT_PERIOD_HOURS]);
 
-  // Function to update the rate limit counter
+  //  Funcion para acutualizar la funcion de rate limit counter 
   const incrementRateLimit = useCallback(async (ipAddress: string): Promise<number> => {
     try {
       const rateLimitRef = doc(db, 'rateLimits', ipAddress);
@@ -174,7 +173,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         const data = rateLimitDoc.data();
         const resetTime = data.resetTime.toDate();
         
-        // If reset time has passed, reset the counter
+        // Si el tiempo de reset paso, se resetean los contadores
         if (resetTime < now) {
           const newResetTime = new Date(now);
           newResetTime.setHours(now.getHours() + RATE_LIMIT_PERIOD_HOURS);
@@ -188,7 +187,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           return MAX_SUBMISSIONS_PER_PERIOD - 1;
         }
         
-        // Increment counter
+        //incrementar el conador
         const newCount = (data.count || 0) + 1;
         await setDoc(rateLimitRef, {
           count: newCount,
@@ -198,7 +197,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         
         return MAX_SUBMISSIONS_PER_PERIOD - newCount;
       } else {
-        // First submission
+        // Primera subida 
         const resetTime = new Date(now);
         resetTime.setHours(now.getHours() + RATE_LIMIT_PERIOD_HOURS);
         
@@ -216,7 +215,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     }
   }, [RATE_LIMIT_PERIOD_HOURS]);
 
-  // Format the time until rate limit reset
+  // Formatea el tiempo hasta el rate limit reset 
   const formatTimeUntilReset = (resetTime: Date): string => {
     const now = new Date();
     const diffMs = resetTime.getTime() - now.getTime();
@@ -226,7 +225,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     return `${diffHrs}h ${diffMins}m`;
   };
 
-  // Subscribe to reviews in real-time
+  // Suscribirse a las reseñas en tiempo real
   const subscribeToReviews = useCallback(() => {
     setIsLoadingReviews(true);
     try {
@@ -266,7 +265,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     }
   }, [maxQueryLimit, moderationRequired]);
 
-  // Effect to handle subscription
+  // Effecto para manejar la suscripvcion
   useEffect(() => {
     const unsubscribe = subscribeToReviews();
     return () => {

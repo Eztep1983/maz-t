@@ -1,7 +1,11 @@
-import Head from 'next/head'
-import CatalogWebsite from '@/components/CatalogWebsite'
+'use client'
+
+import Head from 'next/head';
+import CatalogWebsite from '@/components/CatalogWebsite';
+import { redirect } from "next/navigation";
 
 export default function Home() {
+  redirect("/catalog"); 
   return (
     <>
       <Head>

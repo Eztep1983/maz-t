@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useCart } from "./CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeIn } from "@/utils/animations";
-import { FaShoppingCart, FaWhatsapp, FaTrash, FaEnvelope } from 'react-icons/fa';
+import { FaShoppingCart, FaWhatsapp, FaTrash, FaEnvelope, FaCheckCircle } from 'react-icons/fa';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -65,12 +65,14 @@ const Cart = () => {
       <AnimatePresence>
         {showToast && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-20 right-4 bg-white border border-gray-300 px-4 py-2 rounded-md shadow-lg text-gray-800 z-50"
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed bottom-16 right-6 px-6 py-3 rounded-lg shadow-xl bg-gradient-to-r from-blue-400 to-blue-600 text-white text-sm flex items-center gap-3 z-50"
           >
-            Producto agregado al carrito
+            <FaCheckCircle size={18} className="text-white" />
+            <span className="font-semibold">¡Producto agregado al carrito!</span>
           </motion.div>
         )}
       </AnimatePresence>

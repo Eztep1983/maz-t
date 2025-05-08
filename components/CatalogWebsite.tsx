@@ -13,19 +13,30 @@ import ContactForm from "./ContactForm";
 import Cart from "./Cart";
 import AboutUs from "./AboutUs";
 import TestimonialsSection from "./testimonials";
+import { useSearchParams } from "next/navigation";
 
 // Constants
 const MAIN_COLOR = "rgb(32, 40, 77)";
 const LOGO_URL = "/images/Logo.jpeg";
 
-const CatalogWebsite = () => {
+const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
   // State
-  const [activeSection, setActiveSection] = useState("about");
+    // Mueve la lógica de searchParams aquí
+  const searchParams = useSearchParams();
+  const productSlug = initialProduct || searchParams.get('product');
+  const [activeSection, setActiveSection] = useState(productSlug ? "catalog" : "about");
   const [menuOpen, setMenuOpen] = useState(false);
   const [, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [, setScreenWidth] = useState(0);
   const [testimonialsPage, setTestimonialsPage] = useState(1);
   
+
+  useEffect(() => {
+    if (initialProduct) {
+      setActiveSection("catalog");
+      // 
+    }
+  }, [initialProduct]);
 
   // Sections configuration
   const sections = useMemo(() => [
@@ -96,11 +107,11 @@ const CatalogWebsite = () => {
     return () => unsubscribe();
   }, []);
 
-  // Render functions
+  // Renderizar secciones
   const renderSectionContent = () => {
     switch (activeSection) {
       case "catalog":
-        return <ProductGrid />;
+        return <ProductGrid initialProductSlug={initialProduct} />;
       case "testimonials":
         return (
           <TestimonialsSection 
