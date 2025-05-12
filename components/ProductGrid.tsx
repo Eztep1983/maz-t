@@ -549,6 +549,7 @@ const handleCloseModal = () => {
                         name: product.name,
                         quantity: 1,
                         price: 0,
+                        imagePublicId: product.imagePublicId
                       })
                     }
                     className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm transition-colors disabled:opacity-50"

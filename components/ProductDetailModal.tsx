@@ -134,11 +134,12 @@ const ProductDetailModal = ({ product, onClose, isOpen }: ProductDetailModalProp
                   <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={() => {
-                        addToCart({ 
-                          id: getNumericId(product.id), 
-                          name: product.name, 
-                          quantity: 1, 
-                          price: 0 
+                        addToCart({
+                          id: getNumericId(product.id),
+                          name: product.name,
+                          quantity: 1,
+                          price: 0,
+                          imagePublicId: product.imagePublicId
                         });
                         onClose();
                       }}
