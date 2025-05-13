@@ -54,19 +54,42 @@ const Cart = () => {
   // Funciones para enviar correo y WhatsApp
   const sendToEmail = () => {
     const emailAddress = "tmazqualitytoner@gmail.com";
-    const subject = "Consulta de productos";
-    const message = items.map((item) => `${item.name} (x${item.quantity})`).join("\n");
-    const emailBody = `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`;
-    const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-    window.open(mailtoLink, "_blank");
+    const subject = encodeURIComponent("Consulta de productos");
+    
+    if (!items || items.length === 0) {
+        alert("No hay productos seleccionados.");
+        return;
+    }
+
+    const message = items.map(item => `${item.name} (x${item.quantity})`).join("\n");
+    const emailBody = encodeURIComponent(
+        `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`
+    );
+
+    const mailtoLink = `mailto:${emailAddress}?subject=${subject}&body=${emailBody}`;
+    window.open(mailtoLink, "_blank", "noopener,noreferrer");
   };
 
   const sendToWhatsApp = () => {
     const phoneNumber = "573147845883";
-    const message = items.map((item) => `${item.name} (x${item.quantity})`).join("\n");
-    const whatsappMessage = `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`;
-    const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-    window.open(whatsappURL, "_blank");
+
+    if (!items || items.length === 0) {
+        alert("No hay productos seleccionados.");
+        return;
+    }
+
+    if (!phoneNumber || phoneNumber.length < 10 || isNaN(phoneNumber)) {
+        alert("Número de teléfono inválido.");
+        return;
+    }
+
+    const message = items.map(item => `${item.name} (x${item.quantity})`).join("\n");
+    const whatsappMessage = encodeURIComponent(
+        `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`
+    );
+
+    const whatsappURL = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+    window.open(whatsappURL, "_blank", "noopener,noreferrer");
   };
 
   return (

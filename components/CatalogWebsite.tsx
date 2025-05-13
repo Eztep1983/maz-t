@@ -29,7 +29,8 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
   const [, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [, setScreenWidth] = useState(0);
   const [testimonialsPage, setTestimonialsPage] = useState(1);
-  
+  const [sectionHistory, setSectionHistory] = useState<string[]>([]);
+
 
   useEffect(() => {
     if (initialProduct) {
@@ -59,6 +60,10 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
     setActiveSection("contact");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+  const handleTestimonialsClick = useCallback(() =>{
+    setActiveSection("testimonials");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const handleProductclick = useCallback(() => {
     setActiveSection("catalog");
@@ -70,10 +75,23 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
   }, []);
 
   const handleSectionChange = useCallback((sectionId: string) => {
+    setSectionHistory((prev) => [...prev, activeSection]);
     setActiveSection(sectionId);
     setMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  }, [activeSection]);
+  
+const handleGoBack = () => {
+  setSectionHistory((prev) => {
+    const newHistory = [...prev];
+    const lastSection = newHistory.pop();
+    if (lastSection) {
+      setActiveSection(lastSection);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    return newHistory;
+  });
+};
 
   // Effects
   useEffect(() => {
@@ -123,7 +141,7 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
         return <ContactForm />;
       case "about":
       default:
-        return <AboutUs onContactClick={handleContactClick} onProductClick={handleProductclick}/>;
+        return <AboutUs onContactClick={handleContactClick} onProductClick={handleProductclick}onTestimonialsClick={handleTestimonialsClick}/>;
     }
   };
 
@@ -184,8 +202,16 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
                 <span>Menú</span>
                 {menuOpen ? <X size={28} color="white" /> : <Menu size={28} color="white" />}
               </button>
+              {typeof window !== "undefined" && window.innerWidth <= 768 && sectionHistory.length > 0 && (
+              <button
+                onClick={handleGoBack}
+                className="fixed bottom-4 left-4 z-50 bg-white text-[rgb(32,40,77)] shadow-md p-3 rounded-full border border-[rgb(32,40,77)] hover:bg-[rgb(32,40,77)] hover:text-white transition"
+                aria-label="Volver a la sección anterior"
+              >
+                ←
+              </button>
+            )}
             </div>
-
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-4">
               {sections.map(({ id, label, icon }) => (

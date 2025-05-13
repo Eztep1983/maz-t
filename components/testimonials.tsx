@@ -369,10 +369,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   // Function to submit form
   const handleReviewSubmission = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth.currentUser && !newReview.name) {
-      setError("Por favor ingresa un nombre para enviar una reseña.");
-      return;
-    }
     
     if (newReview.rating < 1 || newReview.rating > 5) {
       setError("La calificación debe ser entre 1 y 5 estrellas");

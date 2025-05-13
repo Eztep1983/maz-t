@@ -2,8 +2,10 @@ import { Product } from '@/types/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CldImage } from 'next-cloudinary';
 import { useRef, useCallback, useEffect } from 'react';
-import { FaWhatsapp, FaTimes, FaStar } from 'react-icons/fa';
+import { FaWhatsapp, FaTimes, FaStar, FaShare } from 'react-icons/fa';
 import { useCart } from './CartContext';
+import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 type ProductDetailModalProps = {
   product: Product | null;
@@ -11,9 +13,52 @@ type ProductDetailModalProps = {
   isOpen: boolean;
 };
 
-const ProductDetailModal = ({ product, onClose, isOpen }: ProductDetailModalProps) => {
+const ProductDetailModal = ({product,onClose, isOpen }: ProductDetailModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useCart();
+
+  const copyProductUrlToClipboard = useCallback(() => {
+    if (!product) {
+      toast.error('No se pudo obtener el producto');
+      return;
+    }
+
+    const productUrl = `${window.location.origin}/catalog?product=${product.slug}`;
+    
+    navigator.clipboard.writeText(productUrl)
+      .then(() => {
+        toast.success('Enlace copiado al portapapeles', {
+          position: 'top-center',
+          duration: 2000,
+          style: {
+            background: '#4BB543',
+            color: '#fff',
+          },
+        });
+      })
+      .catch(error => {
+        console.error('Error al copiar:', error);
+        toast.error('Error al copiar el enlace', {
+          position: 'top-center',
+          duration: 2000,
+        });
+        
+        const textarea = document.createElement('textarea');
+        textarea.value = productUrl;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          toast.success('Enlace copiado', {
+            position: 'top-center',
+            duration: 2000,
+          });
+        } catch (err) {
+          console.error('Fallback copy failed:', err);
+        }
+        document.body.removeChild(textarea);
+      });
+  }, [product]);
 
   const handleWhatsAppConsult = useCallback((productName: string) => {
     const message = encodeURIComponent(`Hola, estoy interesado en obtener más información sobre el producto: ${productName}. ¿Podrías proporcionarme más detalles?`);
@@ -75,6 +120,7 @@ const ProductDetailModal = ({ product, onClose, isOpen }: ProductDetailModalProp
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="md:w-1/2 flex justify-center items-center border rounded-lg shadow-2xl">
                   <CldImage
+                    loading='lazy'
                     quality="auto"
                     width="300" 
                     height="300"  
@@ -130,8 +176,7 @@ const ProductDetailModal = ({ product, onClose, isOpen }: ProductDetailModalProp
                       ))}
                     </div>
                   </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex flex-col gap-8">
                     <button
                       onClick={() => {
                         addToCart({
@@ -148,7 +193,35 @@ const ProductDetailModal = ({ product, onClose, isOpen }: ProductDetailModalProp
                     >
                       Añadir al carrito
                     </button>
-                    
+                    <button
+                      onClick={copyProductUrlToClipboard}
+                      className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition-colors flex items-center justify-center"
+                      aria-label="Compartir producto"
+                      title="Copiar enlace para compartir"
+                    >
+                      <FaShare size={16} className="mr-2" />
+                      Compartir
+                    </button>
+                    <Toaster
+                      position="top-center"
+                      toastOptions={{
+                        duration: 2000,
+                        style: {
+                          background: '#363636',
+                          color: '#fff',
+                        },
+                        success: {
+                          style: {
+                            background: '#4BB543',
+                          },
+                        },
+                        error: {
+                          style: {
+                            background: '#FF3333',
+                          },
+                        },
+                      }}
+                    />
                     <button
                       onClick={() => handleWhatsAppConsult(product.name)}
                       className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors flex items-center justify-center"

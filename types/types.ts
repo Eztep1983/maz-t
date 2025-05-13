@@ -10,4 +10,3 @@ export interface Product {
     tags?: string[];
     slug: string;
 }
-

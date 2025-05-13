@@ -2,7 +2,9 @@
 import { motion } from 'framer-motion';
 import React from 'react';
 import Slider from 'react-slick';
-
+import Image from 'next/image';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 const Carousel = () => {
 
   const IMAGES = [
@@ -12,7 +14,6 @@ const Carousel = () => {
   ];
   
   const settings = {
-    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -23,17 +24,20 @@ const Carousel = () => {
   };
   return (
     <Slider {...settings}>
-      {IMAGES.map((image, index) => (
-        <motion.div       whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.98 }}key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-          <img 
+    {IMAGES.map((image, index) => (
+      <div key={`carousel-image-${index}`} className="focus-visible:outline-none">
+        <div className="relative h-[230px] w-full">
+          <Image 
             src={image} 
-            alt={`Image ${index + 1}`} 
-            className="w-full h-[200px] object-cover"
+            alt={`Instalaciones de Tmaz Quality Toner ${index + 1}`} 
+            fill
+            className="object-cover"
+            priority={index === 0}
           />
-        </motion.div>
-      ))}
-    </Slider>
+        </div>
+      </div>
+    ))}
+  </Slider>
   );
 };
 

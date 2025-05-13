@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     siteName: "Tmaz Quality Toners",
     images: [
       {
-        url: "https://www.tmazqualitytoners.com.co/images/Logo.jpeg",
+        url: "https://www.tmazqualitytoners.com.co/images/Toners_consecutivo.png",
         width: 1200,
         height: 630,
       },
