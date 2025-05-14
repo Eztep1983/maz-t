@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { fadeIn } from "@/utils/animations";
 import { Product } from '@/types/types';
 
+
 import { 
   FaShoppingCart, 
   FaWhatsapp, 
@@ -15,7 +16,6 @@ import {
   FaMinus, 
   FaPlus 
 } from 'react-icons/fa';
-import Image from 'next/image';
 import { CldImage } from "next-cloudinary";
 
 const Cart = () => {
@@ -24,7 +24,7 @@ const Cart = () => {
   const [showToast, setShowToast] = useState(false);
   const { items, removeFromCart, updateQuantity, itemCount } = useCart();
   const prevItemCount = useRef(itemCount);
-  const cartRef = useRef(null);
+  const cartRef = useRef<HTMLDivElement>(null); // Explicitly type the ref
 
   // Animación al agregar producto
   useEffect(() => {
@@ -37,14 +37,18 @@ const Cart = () => {
     prevItemCount.current = itemCount;
   }, [itemCount]);
 
-  // Cerrar al hacer clic fuera del carrito
+  // Cerrar al hacer clic fuera del carrito  
   useEffect(() => {
-    const handleClickOutside = (event: { target: any; }) => {
-      if (cartRef.current && !cartRef.current.contains(event.target) && isOpen) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        cartRef.current && 
+        !cartRef.current.contains(event.target as Node) && 
+        isOpen
+      ) {
         setIsOpen(false);
       }
     };
-
+  
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -71,18 +75,12 @@ const Cart = () => {
   };
 
   const sendToWhatsApp = () => {
-    const phoneNumber = "573147845883";
+    const phoneNumber = 573147845883;
 
     if (!items || items.length === 0) {
         alert("No hay productos seleccionados.");
         return;
     }
-
-    if (!phoneNumber || phoneNumber.length < 10 || isNaN(phoneNumber)) {
-        alert("Número de teléfono inválido.");
-        return;
-    }
-
     const message = items.map(item => `${item.name} (x${item.quantity})`).join("\n");
     const whatsappMessage = encodeURIComponent(
         `¡Hola! Estoy interesado en los siguientes productos:\n\n${message}\n\n¿Podrías darme más información y disponibilidad?`
@@ -195,6 +193,8 @@ const Cart = () => {
                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 border shadow-sm">
                             {item.imagePublicId ? (
                               <CldImage
+                                quality={"auto"}
+                                loading="lazy"
                                 src={item.imagePublicId} 
                                 alt={item.name}
                                 width={64}
