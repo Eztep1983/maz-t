@@ -6,10 +6,9 @@ import { Metadata } from 'next';
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { product?: string }
+  searchParams: Promise<{ product?: string }>
 }): Promise<Metadata> {
-  const params = await searchParams; 
-  const product = params.product;
+  const { product } = await searchParams;
 
   return {
     title: product 
@@ -26,7 +25,7 @@ export async function generateMetadata({
         ? `${product.replace(/-/g, ' ')} | Tmaz Toners` 
         : 'Catálogo Tmaz Quality Toners',
       description: product
-        ? `Especificaciones técnicas y precios de ${product.replace(/-/g, ' ')}`
+        ? `Especificaciones técnicas y precios de ${product.replace(/-/g, ' ')}` 
         : 'Productos profesionales para impresoras y fotocopiadoras',
       url: 'https://tmazqualitytoners.com.co/catalog',
       images: [{
@@ -48,13 +47,13 @@ export async function generateMetadata({
 export default async function CatalogPage({
   searchParams,
 }: {
-  searchParams: { product?: string }
+  searchParams: Promise<{ product?: string }>
 }) {
-  const params = await searchParams;
+  const { product } = await searchParams;
 
   return (
     <Suspense fallback={<Loading />}>
-      <CatalogWebsite initialProduct={params.product} />
+      <CatalogWebsite initialProduct={product} />
     </Suspense>
   );
 }
