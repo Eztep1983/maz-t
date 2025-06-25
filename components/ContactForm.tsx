@@ -30,7 +30,7 @@ const socialLinks = [
   },
   {
     platform: 'WhatsApp',
-    url: 'https://wa.me/3147845883',
+    url: 'https://wa.me/573147845883',
     icon: <FaWhatsapp size={24} />,
     className: 'bg-green-500 hover:bg-green-600'
   }
