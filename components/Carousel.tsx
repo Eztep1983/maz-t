@@ -8,9 +8,12 @@ import "slick-carousel/slick/slick-theme.css";
 const Carousel = () => {
 
   const IMAGES = [
-    "/images/Instalaciones2.jpeg",
-    "/images/Instalaciones1.jpeg",
-    "/images/Toners_entrada.jpeg",
+    "/images/Toners_consecutivo.png",
+    "/images/Toners1.jpeg",
+    "/images/Toners2.jpeg",
+    "/images/Toners3.jpeg",
+    "/images/Toners4.jpeg"
+
   ];
   
   const settings = {

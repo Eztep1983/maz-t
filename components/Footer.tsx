@@ -1,5 +1,8 @@
-import { Phone, Mail, MapPin, Facebook, Instagram, Clock, Copyright } from "lucide-react";
+import { Phone, Mail, MapPin, Facebook, Clock, Copyright } from "lucide-react";
 import Link from "next/link";
+import { faTiktok } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 const Footer = () => {
   // Datos de contacto reutilizables
@@ -46,11 +49,12 @@ const Footer = () => {
       className: "hover:bg-blue-600 hover:text-white"
     },
     {
-      platform: "Instagram",
-      url: "https://www.instagram.com/pro_toshiba_service?igsh=bWR1cmx2bzJmbHl0",
-      icon: <Instagram size={24} />,
-      className: "hover:bg-gradient-to-r from-pink-500 to-purple-500 hover:text-white"
-    }
+      platform: "TikTok",
+      url: "https://www.tiktok.com/@tmaztoners?_t=ZS-8zEt3z9xW9A&_r=1",
+      icon: <FontAwesomeIcon icon={faTiktok} size="1x" />,
+      className: "hover:bg-blue-600 hover:text-white"
+    },
+
   ];
 
   return (

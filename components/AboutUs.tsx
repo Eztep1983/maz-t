@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { 
   FaFacebook, 
-  FaInstagram, 
   FaMapMarkerAlt, 
   FaPhone, 
   FaEnvelope, 
@@ -37,10 +36,7 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
   const BRANDS = [
     "/images/toshiba_logo.png",
     "/images/ricoh_logo.jpg",
-    "/images/Epson_logo.jpg", 
-    "/images/Canon_logo.png",
     "/images/Minolta_logo.jpg",
-    "/images/samsung_logo.jpg",
   ];
 
   const LOGO_URL = "/images/Logo.jpeg";
@@ -56,8 +52,7 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
   };
 
   const SOCIAL_LINKS = {
-    facebook: "https://www.facebook.com/konica.minolta.7140",
-    instagram: "https://www.instagram.com/pro_toshiba_service?igsh=bWR1cmx2bzJmbHl0"
+    facebook: "https://www.facebook.com/profile.php?id=61559681797295",
   };
 
   const CTA_OPTIONS = [
@@ -157,8 +152,8 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
   const HistoriaContent = () => (
     <>
       <p className="mb-4 leading-relaxed">
-        Somos una empresa distribuidora de Toner ubicada en la ciudad de Pasto, Nariño-Colombia, especializada en la venta de insumos y repuestos para 
-        fotocopiadoras e impresoras, incluyendo máquinas multifuncionales de las marcas 
+        Somos una empresa distribuidora de Toner ubicada en la ciudad de Pasto, Nariño-Colombia, especializada en la venta de toner para 
+        fotocopiadoras multifuncionales de las marcas 
         más reconocidas del mercado.
       </p>
       <p className="mb-4 leading-relaxed">
@@ -172,11 +167,10 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
       </p>
       <motion.div
         variants={pulseAnimation}
-        animate="pulse"
         className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm"
       >
         <p className="text-blue-800 font-medium">
-          ¿Buscas optimizar tus costos de impresión? Consulta nuestro catálogo de productos y descubre soluciones que se adaptan a tu presupuesto.
+          ¿Buscas optimizar tus costos de impresión? Consulta nuestro catálogo de productos y descubre soluciones que se adaptan a tus necesidades.
           <motion.button
             onClick={handleProductClick}
             className="flex items-center text-blue-600 font-bold mt-2 hover:underline"
@@ -194,22 +188,20 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
       <div className="mb-6">
         <h3 className="text-xl font-semibold mb-3 text-gray-800">Nuestra Misión</h3>
         <p className="leading-relaxed">
-          Proporcionar insumos y soluciones de impresión de alta calidad que permitan a 
-          nuestros clientes optimizar sus recursos, ofreciendo siempre un servicio 
-          personalizado y eficiente que supere sus expectativas.
+        Proporcionanar toner compatible de altísima calidad que optimice el rendimiento de impresión,
+        ofreciendo una excelente relación calidad-precio para nuestros clientes.
         </p>
       </div>
       <div className="mb-6">
         <h3 className="text-xl font-semibold mb-3 text-gray-800">Nuestra Visión</h3>
         <p className="leading-relaxed">
-          Ser la empresa líder en distribución de insumos para impresión en la región, 
+          Ser la empresa líder en distribución de toner multicolor en la región, 
           reconocida por la calidad de nuestros productos, la excelencia en el servicio 
           y nuestro compromiso con la innovación y la sostenibilidad.
         </p>
       </div>
       <motion.div
         variants={pulseAnimation}
-        animate="pulse"
         className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm"
       >
         <p className="text-green-800 font-medium">
@@ -222,9 +214,9 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
   const EquipoContent = () => (
     <>
       <p className="mb-4 leading-relaxed">
-        Contamos con un equipo de profesionales altamente capacitados en el sector de la 
-        impresión, con amplia experiencia en la distribución de equipos 
-        e insumos.
+      Contamos con un equipo de profesionales altamente capacitados en el sector de impresión, 
+      con amplia experiencia en la gestión, 
+      selección y optimización de tóners para todo tipo de necesidades.
       </p>
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2 text-gray-800">Nuestro equipo incluye:</h3>
@@ -249,7 +241,6 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
       </div>
       <motion.div
         variants={pulseAnimation}
-        animate="pulse"
         className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg shadow-sm"
       >
         <p className="text-purple-800 font-medium">
@@ -279,12 +270,18 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
   ];
 
   return (
-    <div 
-      className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg py-12 px-4 sm:px-6 lg:px-8 relative"
-      style={{ backgroundImage: "url('/images/EntradaDerecha.jpeg')", backgroundSize: "1000px", backgroundPosition: "top", backgroundRepeat: "no-repeat" }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-b from-white/70 to-white pointer-events-none"></div>
-      
+  <div
+    className="min-h-screen rounded-2xl border border-gray-200 shadow-md py-12 px-4 lg:px-8 relative"
+    style={{
+      backgroundImage: "url('/images/TonersCantidad.png')",
+      backgroundSize: "contain",
+      backgroundPosition: "top",
+      backgroundRepeat: "no-repeat"
+    }}
+    
+  >
+
+      <div className="absolute inset-0 bg-gradient-to-b from-white/50 to-white pointer-events-none"></div>
       {/* Fixed WhatsApp Button */}
       <motion.button
         className="fixed bottom-6 left-6 bg-green-500 text-white p-4 rounded-full shadow-lg z-50 flex items-center justify-center"
@@ -322,10 +319,11 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
               </span>
             </h1>
             <h2 className="text-xl md:text-2xl font-semibold text-gray-700 mb-2">
-              Toshiba Soporte Autorizado
+              Distribuidores
             </h2>
             <p className="text-black text-lg max-w-3xl mx-auto leading-relaxed">
-              Distribuidores de Toner, repuestos y consumibles para impresoras y fotocopiadoras.
+            Distribuidores expertos en tóners de alto rendimiento para fotocopiadoras multifuncionales 
+            calidad y compatibilidad garantizada.
             </p>
           </div>
         </motion.section>
@@ -427,7 +425,6 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
             <motion.div
               className="bg-white p-5 rounded-xl shadow-md"
               variants={floatAnimation}
-              animate="float"
             >
               <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-r">
                 <h3 className="text-lg font-bold text-yellow-800">¡Oferta especial!</h3>
@@ -484,7 +481,7 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
           transition={{ duration: 0.7, delay: 0.5 }}
         >
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
-            Marcas con las que Trabajamos
+              Toner compatible para las marcas
           </h2>
           <div className="flex flex-wrap justify-center gap-6">
             {BRANDS.map((src, index) => (
@@ -493,6 +490,7 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
                 className="bg-white px-6 py-4 rounded-lg shadow-md"
                 whileHover={{ scale: 1.05, rotate: 2 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={handleProductClick}
               >
                 <img src={src} alt={`Brand ${index}`} className="h-8 w-auto" />
               </motion.div>
@@ -510,7 +508,7 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
               <FaMapMarkerAlt className="text-red-500 mr-2" />
-              Nuestro punto de venta autorizado
+              Punto autorizado de venta en pasto 
             </h2>
             <div className="rounded-xl overflow-hidden shadow-lg aspect-video">
               <iframe
@@ -704,19 +702,13 @@ const AboutUs = ({ onContactClick, onProductClick, onTestimonialsClick }: AboutU
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1 }}
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Síguenos en Redes Sociales</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Síguenos en</h2>
           <div className="flex justify-center gap-6">
             <SocialIcon 
               href={SOCIAL_LINKS.facebook}
               icon={<FaFacebook />}
               color="text-blue-600"
               hoverColor="hover:bg-blue-50"
-            />
-            <SocialIcon 
-              href={SOCIAL_LINKS.instagram}
-              icon={<FaInstagram />}
-              color="text-pink-600"
-              hoverColor="hover:bg-pink-50"
             />
           </div>
           

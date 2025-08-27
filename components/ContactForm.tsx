@@ -18,16 +18,11 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xnnnrnjq';
 const socialLinks = [
   {
     platform: 'Facebook',
-    url: 'https://www.facebook.com/konica.minolta.7140',
+    url: 'https://www.facebook.com/profile.php?id=61559681797295',
     icon: <Facebook size={24} />,
     className: 'bg-blue-600 hover:bg-blue-700'
   },
-  {
-    platform: 'Instagram',
-    url: 'https://www.instagram.com/pro_toshiba_service?igsh=bWR1cmx2bzJmbHl0',
-    icon: <Instagram size={24} />,
-    className: 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600'
-  },
+
   {
     platform: 'WhatsApp',
     url: 'https://wa.me/573147845883',
