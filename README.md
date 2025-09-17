@@ -1,36 +1,249 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Documentación de la Aplicación Next.js - Tmaz Quality Toners
+Índice
+Descripción General
 
-## Getting Started
+Estructura del Proyecto
 
-First, run the development server:
+Componentes Principales
 
-```bash
+Funcionalidades Clave
+
+Tecnologías Utilizadas
+
+Configuración y Despliegue
+
+SEO y Metadatos
+
+Consideraciones de Rendimiento
+
+Descripción General
+La aplicación es un catálogo digital para Tmaz Quality Toners, una empresa distribuidora de tóneres y suministros de impresión ubicada en Pasto, Nariño, Colombia. La aplicación permite a los usuarios explorar productos, conocer la empresa, ver testimonios y contactar a la empresa.
+
+Estructura del Proyecto
+text
+src/
+├── app/
+│   └── catalog/
+│       └── page.tsx          # Página principal del catálogo
+├── components/
+│   ├── AboutUs.tsx           # Componente "Sobre Nosotros"
+│   ├── CatalogWebsite.tsx    # Componente principal del catálogo
+│   ├── Cart.tsx              # Componente del carrito de compras
+│   ├── ContactForm.tsx       # Formulario de contacto
+│   ├── Footer.tsx            # Pie de página
+│   ├── Loading.tsx           # Componente de carga
+│   ├── ProductGrid.tsx       # Grid de productos
+│   └── TestimonialsSection.tsx # Sección de testimonios
+└── services/
+    └── firebaseConfig.ts     # Configuración de Firebase
+Componentes Principales
+1. app/catalog/page.tsx
+Página principal que sirve como punto de entrada para el catálogo.
+
+Funcionalidades:
+
+Generación dinámica de metadatos SEO basados en parámetros de búsqueda
+
+Implementación de Suspense para loading states
+
+Manejo de parámetros de URL para productos específicos
+
+Características SEO:
+
+Títulos y descripciones dinámicas según el producto
+
+Metatags para Open Graph
+
+URLs canónicas
+
+Palabras clave optimizadas
+
+2. components/CatalogWebsite.tsx
+Componente principal que gestiona la navegación entre secciones.
+
+Estado:
+
+activeSection: Controla la sección visible (about, catalog, testimonials, contact)
+
+menuOpen: Estado del menú móvil
+
+testimonialsPage: Paginación de testimonios
+
+sectionHistory: Historial de navegación
+
+Funcionalidades:
+
+Navegación entre secciones
+
+Menú responsive para dispositivos móviles
+
+Botón de retroceso en móviles
+
+Integración con Firebase Authentication
+
+3. components/AboutUs.tsx
+Componente que muestra información sobre la empresa.
+
+Secciones:
+
+Historia de la empresa
+
+Misión y visión
+
+Información del equipo
+
+Información de contacto
+
+Marcas compatibles
+
+Preguntas frecuentes
+
+Características:
+
+Animaciones con Framer Motion
+
+Diseño responsive
+
+Múltiples CTAs (Call to Action)
+
+Integración con Google Maps
+
+Botón flotante de WhatsApp
+
+Funcionalidades Clave
+1. Navegación Responsive
+Menú adaptativo para desktop y móvil
+
+Navegación por pestañas en la sección "Sobre Nosotros"
+
+Historial de navegación para móviles
+
+2. Gestión de Estado
+Estado local para UI components
+
+Integración con Firebase para autenticación
+
+Manejo de parámetros de URL
+
+3. Optimización SEO
+Metadatos dinámicos por producto
+
+Estructura semántica HTML
+
+URLs canónicas
+
+Optimización para redes sociales (Open Graph)
+
+4. Experiencia de Usuario
+Animaciones suaves con Framer Motion
+
+Estados de carga
+
+Diseño mobile-first
+
+Botones de acción flotantes (WhatsApp)
+
+5. Integraciones
+Firebase para autenticación
+
+Google Maps para ubicación
+
+WhatsApp API para comunicación
+
+Meta Pixel (preparado para implementación)
+
+Tecnologías Utilizadas
+Frameworks y Librerías
+Next.js 14: Framework React con App Router
+
+React 18: Librería principal de UI
+
+TypeScript: Tipado estático
+
+Framer Motion: Animaciones
+
+Firebase: Autenticación y base de datos
+
+Lucide React: Iconografía
+
+React Icons: Iconos adicionales
+
+Estilos
+Tailwind CSS: Framework de estilos
+
+CSS personalizado para componentes específicos
+
+APIs y Servicios Externos
+Google Maps: Embed API para ubicación
+
+WhatsApp: API de enlaces directos
+
+Firebase: Servicios de backend
+
+Configuración y Despliegue
+Variables de Entorno
+env
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+Comandos de Despliegue
+bash
+# Instalación
+npm install
+
+# Desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Build
+npm run build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Producción
+npm start
+SEO y Metadatos
+La aplicación implementa una estrategia SEO avanzada con:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Metadatos Dinámicos: Títulos y descripciones que cambian según el producto
 
-## Learn More
+Open Graph: Optimización para compartir en redes sociales
 
-To learn more about Next.js, take a look at the following resources:
+URLs Canónicas: Prevención de contenido duplicado
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Palabras Clave: Optimizadas para productos y ubicación
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Estructura Semántica: Uso adecuado de headings y landmarks
 
-## Deploy on Vercel
+Consideraciones de Rendimiento
+Optimizaciones Implementadas
+Lazy Loading: Imágenes y componentes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Suspense: Estados de carga para mejor UX
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Memoización: Uso de useMemo y useCallback
+
+Image Optimization: Componente Next.js Image
+
+Mejoras Potenciales
+Implementar ISR (Incremental Static Regeneration) para productos
+
+Añadir PWA capabilities
+
+Implementar más estrategias de caching
+
+Optimizar bundles con code splitting
+
+Próximos Pasos
+Implementar carrito de compras completo
+
+Añadir pasarela de pagos
+
+Implementar panel de administración
+
+Añadir más integraciones (email marketing, analytics)
+
+Implementar búsqueda y filtros avanzados
+
+Este documento proporciona una visión general completa de la aplicación. Para detalles específicos de implementación, referirse a los comentarios en el código de cada componente.
