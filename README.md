@@ -1,15 +1,15 @@
 #  Documentación de la Aplicación Next.js - Tmaz Quality Toners
 
 ##  Índice
-- [Descripción General](#-descripción-general)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Componentes Principales](#-componentes-principales)
-- [Funcionalidades Clave](#-funcionalidades-clave)
-- [Tecnologías Utilizadas](#-tecnologías-utilizadas)
-- [Configuración y Despliegue](#-configuración-y-despliegue)
-- [SEO y Metadatos](#-seo-y-metadatos)
-- [Consideraciones de Rendimiento](#-consideraciones-de-rendimiento)
-- [Próximos Pasos](#-próximos-pasos)
+- [Descripción General](#descripción-general)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Componentes Principales](#componentes-principales)
+- [Funcionalidades Clave](#funcionalidades-clave)
+- [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Configuración y Despliegue](#configuración-y-despliegue)
+- [SEO y Metadatos](#seo-y-metadatos)
+- [Consideraciones de Rendimiento](#consideraciones-de-rendimiento)
+- [Próximos Pasos](#próximos-pasos)
 
 ---
 
