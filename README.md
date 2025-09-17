@@ -1,188 +1,139 @@
-Documentación de la Aplicación Next.js - Tmaz Quality Toners
-Índice
-Descripción General
+#  Documentación de la Aplicación Next.js - Tmaz Quality Toners
 
-Estructura del Proyecto
+##  Índice
+- [Descripción General](#-descripción-general)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Componentes Principales](#-componentes-principales)
+- [Funcionalidades Clave](#-funcionalidades-clave)
+- [Tecnologías Utilizadas](#-tecnologías-utilizadas)
+- [Configuración y Despliegue](#-configuración-y-despliegue)
+- [SEO y Metadatos](#-seo-y-metadatos)
+- [Consideraciones de Rendimiento](#-consideraciones-de-rendimiento)
+- [Próximos Pasos](#-próximos-pasos)
 
-Componentes Principales
+---
 
-Funcionalidades Clave
+##  Descripción General
+La aplicación es un catálogo digital para **Tmaz Quality Toners**, una empresa distribuidora de tóneres y suministros de impresión ubicada en **Pasto, Nariño, Colombia**.  
+Permite a los usuarios:
+- Explorar productos
+- Conocer la empresa
+- Ver testimonios
+- Contactar a la empresa
 
-Tecnologías Utilizadas
+---
 
-Configuración y Despliegue
+##  Estructura del Proyecto
 
-SEO y Metadatos
-
-Consideraciones de Rendimiento
-
-Descripción General
-La aplicación es un catálogo digital para Tmaz Quality Toners, una empresa distribuidora de tóneres y suministros de impresión ubicada en Pasto, Nariño, Colombia. La aplicación permite a los usuarios explorar productos, conocer la empresa, ver testimonios y contactar a la empresa.
-
-Estructura del Proyecto
-text
 src/
 ├── app/
-│   └── catalog/
-│       └── page.tsx          # Página principal del catálogo
+│ └── catalog/
+│ └── page.tsx # Página principal del catálogo
 ├── components/
-│   ├── AboutUs.tsx           # Componente "Sobre Nosotros"
-│   ├── CatalogWebsite.tsx    # Componente principal del catálogo
-│   ├── Cart.tsx              # Componente del carrito de compras
-│   ├── ContactForm.tsx       # Formulario de contacto
-│   ├── Footer.tsx            # Pie de página
-│   ├── Loading.tsx           # Componente de carga
-│   ├── ProductGrid.tsx       # Grid de productos
-│   └── TestimonialsSection.tsx # Sección de testimonios
+│ ├── AboutUs.tsx # Componente "Sobre Nosotros"
+│ ├── CatalogWebsite.tsx # Componente principal del catálogo
+│ ├── Cart.tsx # Componente del carrito de compras
+│ ├── ContactForm.tsx # Formulario de contacto
+│ ├── Footer.tsx # Pie de página
+│ ├── Loading.tsx # Componente de carga
+│ ├── ProductGrid.tsx # Grid de productos
+│ └── TestimonialsSection.tsx # Sección de testimonios
 └── services/
-    └── firebaseConfig.ts     # Configuración de Firebase
-Componentes Principales
-1. app/catalog/page.tsx
-Página principal que sirve como punto de entrada para el catálogo.
+└── firebaseConfig.ts # Configuración de Firebase
 
-Funcionalidades:
 
-Generación dinámica de metadatos SEO basados en parámetros de búsqueda
+---
 
-Implementación de Suspense para loading states
+##  Componentes Principales
 
-Manejo de parámetros de URL para productos específicos
+### 1. `app/catalog/page.tsx`
+**Página principal del catálogo.**
 
-Características SEO:
+**Funcionalidades:**
+- Generación dinámica de metadatos SEO
+- Suspense para estados de carga
+- Manejo de parámetros de URL
 
-Títulos y descripciones dinámicas según el producto
+**SEO:**
+- Títulos y descripciones dinámicas
+- Metatags Open Graph
+- URLs canónicas
+- Palabras clave optimizadas
 
-Metatags para Open Graph
+---
 
-URLs canónicas
+### 2. `components/CatalogWebsite.tsx`
+**Componente central de la aplicación.**
 
-Palabras clave optimizadas
+**Estado:**
+- `activeSection`: controla la sección visible
+- `menuOpen`: estado del menú móvil
+- `testimonialsPage`: paginación de testimonios
+- `sectionHistory`: historial de navegación
 
-2. components/CatalogWebsite.tsx
-Componente principal que gestiona la navegación entre secciones.
+**Funcionalidades:**
+- Navegación entre secciones
+- Menú responsive
+- Botón de retroceso en móviles
+- Integración con Firebase Authentication
 
-Estado:
+---
 
-activeSection: Controla la sección visible (about, catalog, testimonials, contact)
+### 3. `components/AboutUs.tsx`
+**Componente “Sobre Nosotros”.**
 
-menuOpen: Estado del menú móvil
+**Secciones:**
+- Historia de la empresa
+- Misión y visión
+- Equipo
+- Información de contacto
+- Marcas compatibles
+- Preguntas frecuentes
 
-testimonialsPage: Paginación de testimonios
+**Características:**
+- Animaciones con **Framer Motion**
+- Diseño responsive
+- CTAs múltiples
+- Integración con Google Maps
+- Botón flotante de WhatsApp
 
-sectionHistory: Historial de navegación
+---
 
-Funcionalidades:
+##  Funcionalidades Clave
+1. **Navegación Responsive**: menú adaptable + historial de navegación móvil  
+2. **Gestión de Estado**: integración con Firebase + URL params  
+3. **Optimización SEO**: metadatos dinámicos, Open Graph, URLs canónicas  
+4. **Experiencia de Usuario**: animaciones, estados de carga, diseño mobile-first  
+5. **Integraciones**: Firebase, Google Maps, WhatsApp API, Meta Pixel  
 
-Navegación entre secciones
+---
 
-Menú responsive para dispositivos móviles
+##  Tecnologías Utilizadas
 
-Botón de retroceso en móviles
+### Frameworks y Librerías
+- **Next.js 14** (App Router)
+- **React 18**
+- **TypeScript**
+- **Framer Motion**
+- **Firebase**
+- **Lucide React**
+- **React Icons**
 
-Integración con Firebase Authentication
+### Estilos
+- **Tailwind CSS**
+- CSS personalizado
 
-3. components/AboutUs.tsx
-Componente que muestra información sobre la empresa.
+### APIs y Servicios
+- Google Maps (Embed API)
+- WhatsApp API
+- Firebase
 
-Secciones:
+---
 
-Historia de la empresa
+##  Configuración y Despliegue
 
-Misión y visión
-
-Información del equipo
-
-Información de contacto
-
-Marcas compatibles
-
-Preguntas frecuentes
-
-Características:
-
-Animaciones con Framer Motion
-
-Diseño responsive
-
-Múltiples CTAs (Call to Action)
-
-Integración con Google Maps
-
-Botón flotante de WhatsApp
-
-Funcionalidades Clave
-1. Navegación Responsive
-Menú adaptativo para desktop y móvil
-
-Navegación por pestañas en la sección "Sobre Nosotros"
-
-Historial de navegación para móviles
-
-2. Gestión de Estado
-Estado local para UI components
-
-Integración con Firebase para autenticación
-
-Manejo de parámetros de URL
-
-3. Optimización SEO
-Metadatos dinámicos por producto
-
-Estructura semántica HTML
-
-URLs canónicas
-
-Optimización para redes sociales (Open Graph)
-
-4. Experiencia de Usuario
-Animaciones suaves con Framer Motion
-
-Estados de carga
-
-Diseño mobile-first
-
-Botones de acción flotantes (WhatsApp)
-
-5. Integraciones
-Firebase para autenticación
-
-Google Maps para ubicación
-
-WhatsApp API para comunicación
-
-Meta Pixel (preparado para implementación)
-
-Tecnologías Utilizadas
-Frameworks y Librerías
-Next.js 14: Framework React con App Router
-
-React 18: Librería principal de UI
-
-TypeScript: Tipado estático
-
-Framer Motion: Animaciones
-
-Firebase: Autenticación y base de datos
-
-Lucide React: Iconografía
-
-React Icons: Iconos adicionales
-
-Estilos
-Tailwind CSS: Framework de estilos
-
-CSS personalizado para componentes específicos
-
-APIs y Servicios Externos
-Google Maps: Embed API para ubicación
-
-WhatsApp: API de enlaces directos
-
-Firebase: Servicios de backend
-
-Configuración y Despliegue
-Variables de Entorno
-env
+### Variables de Entorno
+```env
 # Firebase Configuration
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
@@ -190,60 +141,48 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-Comandos de Despliegue
-bash
-# Instalación
-npm install
 
-# Desarrollo
-npm run dev
-
-# Build
-npm run build
-
-# Producción
-npm start
 SEO y Metadatos
-La aplicación implementa una estrategia SEO avanzada con:
 
-Metadatos Dinámicos: Títulos y descripciones que cambian según el producto
+Metadatos Dinámicos: títulos y descripciones por producto
 
-Open Graph: Optimización para compartir en redes sociales
+Open Graph: optimización para redes sociales
 
-URLs Canónicas: Prevención de contenido duplicado
+URLs Canónicas: evitar contenido duplicado
 
-Palabras Clave: Optimizadas para productos y ubicación
+Palabras Clave: optimizadas para productos y ubicación
 
-Estructura Semántica: Uso adecuado de headings y landmarks
+Estructura Semántica: headings y landmarks correctos
 
-Consideraciones de Rendimiento
-Optimizaciones Implementadas
-Lazy Loading: Imágenes y componentes
+     Consideraciones de Rendimiento
+Optimizaciones
 
-Suspense: Estados de carga para mejor UX
+Lazy Loading
 
-Memoización: Uso de useMemo y useCallback
+Suspense
 
-Image Optimization: Componente Next.js Image
+Memoización (useMemo, useCallback)
+
+next/image para optimización de imágenes
 
 Mejoras Potenciales
-Implementar ISR (Incremental Static Regeneration) para productos
 
-Añadir PWA capabilities
+Implementar ISR (Incremental Static Regeneration)
 
-Implementar más estrategias de caching
+PWA capabilities
 
-Optimizar bundles con code splitting
+Estrategias de caching adicionales
 
-Próximos Pasos
-Implementar carrito de compras completo
+Code splitting
 
-Añadir pasarela de pagos
+     Próximos Pasos
 
-Implementar panel de administración
+Carrito de compras completo
 
-Añadir más integraciones (email marketing, analytics)
+Pasarela de pagos
 
-Implementar búsqueda y filtros avanzados
+Panel de administración
 
-Este documento proporciona una visión general completa de la aplicación. Para detalles específicos de implementación, referirse a los comentarios en el código de cada componente.
+Integraciones (email marketing, analytics)
+
+Búsqueda y filtros avanzados
