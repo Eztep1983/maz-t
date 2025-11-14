@@ -15,13 +15,16 @@ import AboutUs from "./AboutUs";
 import TestimonialsSection from "./testimonials";
 import { useSearchParams } from "next/navigation";
 
-// Constants
 const MAIN_COLOR = "rgb(32, 40, 77)";
 const LOGO_URL = "/images/Logo.jpeg";
 
+interface AppState {
+  section: string;
+  product?: string;
+  modalOpen?: boolean;
+}
+
 const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
-  // State
-    // Mueve la lógica de searchParams aquí
   const searchParams = useSearchParams();
   const productSlug = initialProduct || searchParams.get('product');
   const [activeSection, setActiveSection] = useState(productSlug ? "catalog" : "about");
@@ -29,17 +32,7 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
   const [, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [, setScreenWidth] = useState(0);
   const [testimonialsPage, setTestimonialsPage] = useState(1);
-  const [sectionHistory, setSectionHistory] = useState<string[]>([]);
 
-
-  useEffect(() => {
-    if (initialProduct) {
-      setActiveSection("catalog");
-      // 
-    }
-  }, [initialProduct]);
-
-  // Sections configuration
   const sections = useMemo(() => [
     { id: "about", label: "Sobre Nosotros", icon: <Info size={20} /> },
     { id: "catalog", label: "Catálogo", icon: <ShoppingBag size={20} /> },
@@ -47,7 +40,6 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
     { id: "contact", label: "Contactos", icon: <Phone size={20} /> },
   ], []);
 
-  // Animation configuration
   const motionProps = useMemo(() => ({
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
@@ -55,43 +47,86 @@ const CatalogWebsite = ({ initialProduct }: { initialProduct?: string }) => {
     transition: { duration: 0.5 },
   }), []);
 
+  // Estado inicial del historial
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+  
+    if (!window.history.state?.catalogInit) {
+      const initialState: AppState = { 
+        section: activeSection,
+        product: productSlug || undefined
+      };
+      window.history.replaceState(
+        { ...initialState, catalogInit: true }, 
+        '', 
+        window.location.href
+      );
+    }
+  
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state as AppState & { catalogInit?: boolean; modalOpen?: boolean };
+      
+      // Si es un popstate del modal, ignorarlo (el modal lo maneja)
+      if (state?.modalOpen) {
+        return;
+      }
+      
+      // Si hay un estado de sección válido, cambiar a esa sección
+      if (state?.section) {
+        setActiveSection(state.section);
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 100);
+      }
+    };
+  
+    window.addEventListener('popstate', handlePopState);
+  
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [activeSection, productSlug]);
+
   // Handlers
   const handleContactClick = useCallback(() => {
-    setActiveSection("contact");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
-  const handleTestimonialsClick = useCallback(() =>{
-    setActiveSection("testimonials");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    handleSectionChange("contact");
   }, []);
 
-  const handleProductclick = useCallback(() => {
-    setActiveSection("catalog");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleTestimonialsClick = useCallback(() => {
+    handleSectionChange("testimonials");
+  }, []);
+
+  const handleProductClick = useCallback(() => {
+    handleSectionChange("catalog");
   }, []);
 
   const toggleMenu = useCallback(() => {
     setMenuOpen(prev => !prev);
   }, []);
 
+  // Cambiar sección y agregar al historial
   const handleSectionChange = useCallback((sectionId: string) => {
-    setSectionHistory((prev) => [...prev, activeSection]);
+    const newState: AppState = { 
+      section: sectionId,
+      product: sectionId === "catalog" && productSlug ? productSlug : undefined
+    };
+    
+    window.history.pushState(newState, '', window.location.href);
     setActiveSection(sectionId);
     setMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [activeSection]);
-  
-const handleGoBack = () => {
-  setSectionHistory((prev) => {
-    const newHistory = [...prev];
-    const lastSection = newHistory.pop();
-    if (lastSection) {
-      setActiveSection(lastSection);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [productSlug]);
+
+  // Botón de retroceso mejorado
+  const handleGoBack = useCallback(() => {
+    // Si hay historial previo, retroceder
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      // Si no hay historial, ir a about
+      handleSectionChange("about");
     }
-    return newHistory;
-  });
-};
+  }, [handleSectionChange]);
 
   // Effects
   useEffect(() => {
@@ -125,11 +160,10 @@ const handleGoBack = () => {
     return () => unsubscribe();
   }, []);
 
-  // Renderizar secciones
   const renderSectionContent = () => {
     switch (activeSection) {
       case "catalog":
-        return <ProductGrid initialProductSlug={initialProduct} />;
+        return <ProductGrid initialProductSlug={productSlug} />;
       case "testimonials":
         return (
           <TestimonialsSection 
@@ -141,7 +175,11 @@ const handleGoBack = () => {
         return <ContactForm />;
       case "about":
       default:
-        return <AboutUs onContactClick={handleContactClick} onProductClick={handleProductclick}onTestimonialsClick={handleTestimonialsClick}/>;
+        return <AboutUs 
+          onContactClick={handleContactClick} 
+          onProductClick={handleProductClick}
+          onTestimonialsClick={handleTestimonialsClick}
+        />;
     }
   };
 
@@ -152,7 +190,6 @@ const handleGoBack = () => {
     >
       <Cart />
 
-      {/* Navbar */}
       <nav 
         className="fixed top-0 left-0 right-0 z-40 shadow-lg" 
         style={{ 
@@ -163,13 +200,9 @@ const handleGoBack = () => {
       >
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
             <div 
               className="flex items-center cursor-pointer hover:opacity-80 transition-opacity duration-300" 
-              onClick={() => {
-                setActiveSection("about");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
+              onClick={() => handleSectionChange("about")}
               aria-label="Go to home"
             >
               <Image
@@ -191,8 +224,15 @@ const handleGoBack = () => {
               </motion.div>
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-4">
+              <button
+                onClick={handleGoBack}
+                className="text-white p-2 rounded-full hover:bg-[rgba(255,255,255,0.2)] transition-colors"
+                aria-label="Volver a la sección anterior"
+              >
+                ←
+              </button>
+              
               <button
                 onClick={toggleMenu}
                 aria-expanded={menuOpen}
@@ -202,17 +242,8 @@ const handleGoBack = () => {
                 <span>Menú</span>
                 {menuOpen ? <X size={28} color="white" /> : <Menu size={28} color="white" />}
               </button>
-              {typeof window !== "undefined" && window.innerWidth <= 768 && sectionHistory.length > 0 && (
-              <button
-                onClick={handleGoBack}
-                className="fixed bottom-4 left-4 z-50 bg-white text-[rgb(32,40,77)] shadow-md p-3 rounded-full border border-[rgb(32,40,77)] hover:bg-[rgb(32,40,77)] hover:text-white transition"
-                aria-label="Volver a la sección anterior"
-              >
-                ←
-              </button>
-            )}
             </div>
-            {/* Desktop Navigation */}
+
             <div className="hidden md:flex space-x-4">
               {sections.map(({ id, label, icon }) => (
                 <button
@@ -233,7 +264,6 @@ const handleGoBack = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
@@ -280,7 +310,6 @@ const handleGoBack = () => {
                   ))}
                 </nav>
 
-                {/* Close Menu Button */}
                 <button
                   onClick={toggleMenu}
                   className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200 focus:outline-none"
@@ -295,15 +324,19 @@ const handleGoBack = () => {
         </AnimatePresence>
       </nav>
 
-      {/* Main Content */}
       <main 
         className="max-w-6xl mx-auto px-4 py-8 flex-grow mt-16"
         style={{ color: MAIN_COLOR }}
       >
-          <motion.div key={activeSection} {...motionProps} className="flex flex-col items-center">
-            {renderSectionContent()}
-          </motion.div>
+        <motion.div 
+          key={activeSection} 
+          {...motionProps} 
+          className="flex flex-col items-center"
+        >
+          {renderSectionContent()}
+        </motion.div>
       </main>
+
       <Footer />
     </div>
   );
