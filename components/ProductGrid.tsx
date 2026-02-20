@@ -1,7 +1,9 @@
+//components/ProductGrid.tsx
+
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { CldImage } from 'next-cloudinary';
 import { useCart } from './CartContext';
 import { FaSearch, FaChevronDown, FaFilter, FaStar, FaShoppingBasket } from 'react-icons/fa';
@@ -12,12 +14,15 @@ import { collection, query, getDocs } from 'firebase/firestore';
 import { Product } from '@/types/types';
 import ProductDetailModal from './ProductDetailModal';
 
+
 const ProductGrid = ({ 
   category, 
-  initialProductSlug 
+  initialProductSlug,
+  onInitialProductConsumed  
 }: { 
   category?: string; 
   initialProductSlug?: string | null;
+  onInitialProductConsumed?: () => void;
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(6);
@@ -37,10 +42,12 @@ const ProductGrid = ({
   const { addToCart } = useCart();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-
+  const openedFromUrl = useRef(!!initialProductSlug);
+  const initialSlugConsumed = useRef(false);
+  const hasOpenedInitialSlug = useRef(false);
+  
   // Fetch products
-  useEffect(() => {
+ useEffect(() => {
     const fetchProducts = async () => {
       try {
         const productsRef = collection(db, "products");
@@ -61,7 +68,6 @@ const ProductGrid = ({
               slug: data.slug || "",
             };
           });
-      
         setProducts(productsData);
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -73,39 +79,47 @@ const ProductGrid = ({
     fetchProducts();
   }, []);
 
-  // Abrir modal desde URL al cargar
+  // ── Abrir modal desde URL — solo UNA vez por montaje ─────────────────────
+  // Si initialProductSlug viene null (ya fue consumido en el padre),
+  // este effect nunca se activa. Si viene con valor, solo abre el modal
+  // la primera vez gracias a hasOpenedInitialSlug.
   useEffect(() => {
-    const slug = searchParams.get('product') || initialProductSlug;
-    if (slug && products.length > 0 && !selectedProduct) {
-      const product = products.find(p => p.slug === slug);
+    if (
+      initialProductSlug &&
+      products.length > 0 &&
+      !selectedProduct &&
+      !hasOpenedInitialSlug.current
+    ) {
+      const product = products.find(p => p.slug === initialProductSlug);
       if (product) {
+        hasOpenedInitialSlug.current = true;
+        openedFromUrl.current = true;
         setSelectedProduct(product);
       }
     }
-  }, [searchParams, products, initialProductSlug, selectedProduct]);
+  }, [products, initialProductSlug]);
 
-  // Close dropdown when clicking outside
+  // ── Cerrar dropdown al hacer clic fuera ──────────────────────────────────
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Memoized derived data
+  // ── Datos derivados memorizados ───────────────────────────────────────────
+
   const { uniqueCategories, uniqueTags } = useMemo(() => {
     const categories = new Set<string>();
     const tags = new Set<string>();
-    
     products.forEach(product => {
       if (product.category) categories.add(product.category);
       product.tags?.forEach(tag => tags.add(tag));
     });
-    
     return {
       uniqueCategories: Array.from(categories).sort(),
       uniqueTags: Array.from(tags).sort()
@@ -113,7 +127,7 @@ const ProductGrid = ({
   }, [products]);
 
   const filteredCategories = useMemo(() => {
-    return uniqueCategories.filter(cat => 
+    return uniqueCategories.filter(cat =>
       cat.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [uniqueCategories, searchTerm]);
@@ -123,21 +137,20 @@ const ProductGrid = ({
       .filter(product => {
         const matchesCategory = !selectedCategory || product.category === selectedCategory;
         const matchesStock = !showInStock || product.inStock;
-        const matchesTags = selectedTags.length === 0 || 
+        const matchesTags = selectedTags.length === 0 ||
           selectedTags.some(tag => product.tags?.includes(tag));
-        const matchesSearch = searchTerm === '' || 
+        const matchesSearch = searchTerm === '' ||
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           product.description.toLowerCase().includes(searchTerm.toLowerCase());
-        
         return matchesCategory && matchesStock && matchesTags && matchesSearch;
       })
       .sort((a, b) => {
         switch (sortOption) {
-          case "featured": return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-          case "name_asc": return a.name.localeCompare(b.name);
-          case "name_desc": return b.name.localeCompare(a.name);
+          case "featured":     return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+          case "name_asc":     return a.name.localeCompare(b.name);
+          case "name_desc":    return b.name.localeCompare(a.name);
           case "availability": return (b.inStock ? 1 : 0) - (a.inStock ? 1 : 0);
-          default: return 0;
+          default:             return 0;
         }
       });
   }, [products, selectedCategory, showInStock, selectedTags, searchTerm, sortOption]);
@@ -151,6 +164,8 @@ const ProductGrid = ({
   const totalPages = useMemo(() => {
     return Math.ceil(filteredProducts.length / productsPerPage);
   }, [filteredProducts, productsPerPage]);
+
+  // ── Efectos de paginación ─────────────────────────────────────────────────
 
   const goToPage = useCallback((pageNumber: number) => {
     setCurrentPage(Math.max(1, Math.min(pageNumber, totalPages)));
@@ -167,6 +182,8 @@ const ProductGrid = ({
     }
   }, [totalPages, currentPage]);
 
+  // ── Persistencia de filtros en localStorage ───────────────────────────────
+
   useEffect(() => {
     const savedFilters = JSON.parse(localStorage.getItem('productFilters') || '{}');
     if (savedFilters) {
@@ -178,16 +195,12 @@ const ProductGrid = ({
   }, []);
 
   useEffect(() => {
-    const filters = {
-      searchInput,
-      selectedCategory,
-      selectedTags,
-      showFilters
-    };
+    const filters = { searchInput, selectedCategory, selectedTags, showFilters };
     localStorage.setItem('productFilters', JSON.stringify(filters));
   }, [searchInput, selectedCategory, selectedTags, showFilters]);
 
-  // Event handlers
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
   const handleWhatsAppConsult = useCallback((productName: string) => {
     const message = encodeURIComponent(`Hola, estoy interesado en el producto: ${productName}`);
     window.open(`https://wa.me/573147845883?text=${message}`, '_blank');
@@ -195,8 +208,9 @@ const ProductGrid = ({
 
   const getNumericId = useCallback((id: string): number => {
     const num = parseInt(id, 10);
-    return isNaN(num) ? Math.abs(id.split('').reduce((hash, char) => 
-      ((hash << 5) - hash) + char.charCodeAt(0), 0)) : num;
+    return isNaN(num)
+      ? Math.abs(id.split('').reduce((hash, char) => ((hash << 5) - hash) + char.charCodeAt(0), 0))
+      : num;
   }, []);
 
   const selectCategory = useCallback((category: string | null) => {
@@ -205,9 +219,9 @@ const ProductGrid = ({
   }, []);
 
   const toggleTag = useCallback((tag: string) => {
-    setSelectedTags(prev => prev.includes(tag) 
-      ? prev.filter(t => t !== tag) 
-      : [...prev, tag]);
+    setSelectedTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
   }, []);
 
   const resetFilters = useCallback(() => {
@@ -219,17 +233,31 @@ const ProductGrid = ({
     setCurrentPage(1);
   }, []);
 
-  // Abrir modal - NO agregar al historial aquí
-  const handleOpenDetails = useCallback((product: Product | null) => {
+  // Abrir detalles desde el grid (NO desde URL)
+  const handleOpenDetails = useCallback((product: Product) => {
+    openedFromUrl.current = false;
     setSelectedProduct(product);
+    window.history.pushState(
+      { section: 'catalog', productSlug: product.slug },
+      '',
+      `/catalog/${product.slug}`
+    );
   }, []);
 
-  // Cerrar modal
+  // Cerrar modal — limpia URL y avisa al padre para que no vuelva a pasar el slug
   const handleCloseModal = useCallback(() => {
+    openedFromUrl.current = false;
     setSelectedProduct(null);
-  }, []);
+    onInitialProductConsumed?.();
+    window.history.replaceState(
+      { section: 'catalog' },
+      '',
+      '/catalog'
+    );
+  }, [onInitialProductConsumed]);
 
-  // UI Components
+  // ── Sub-componentes UI ────────────────────────────────────────────────────
+
   const ProductSkeleton = () => (
     <div className="bg-white rounded-lg shadow-md overflow-hidden p-4 animate-pulse">
       <div className="bg-gray-200 h-48 rounded-lg"></div>
@@ -243,29 +271,16 @@ const ProductGrid = ({
 
   const Pagination = () => {
     if (totalPages <= 1) return null;
-    
+
     const getPageNumbers = () => {
-      const pages = [];
+      const pages: (number | string)[] = [];
       pages.push(1);
-      
-      if (currentPage > 3) {
-        pages.push('...');
-      }
-      
+      if (currentPage > 3) pages.push('...');
       for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-        if (!pages.includes(i) && i > 1 && i < totalPages) {
-          pages.push(i);
-        }
+        if (!pages.includes(i)) pages.push(i);
       }
-      
-      if (currentPage < totalPages - 2) {
-        pages.push('...');
-      }
-      
-      if (totalPages > 1) {
-        pages.push(totalPages);
-      }
-      
+      if (currentPage < totalPages - 2) pages.push('...');
+      if (totalPages > 1) pages.push(totalPages);
       return pages;
     };
 
@@ -279,8 +294,7 @@ const ProductGrid = ({
         >
           &laquo;
         </button>
-        
-        {getPageNumbers().map((page, index) => (
+        {getPageNumbers().map((page, index) =>
           typeof page === 'number' ? (
             <button
               key={index}
@@ -294,12 +308,9 @@ const ProductGrid = ({
               {page}
             </button>
           ) : (
-            <span key={index} className="px-2 py-1">
-              {page}
-            </span>
+            <span key={index} className="px-2 py-1">{page}</span>
           )
-        ))}
-        
+        )}
         <button
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages}
@@ -314,9 +325,7 @@ const ProductGrid = ({
 
   const PerPageSelector = () => (
     <div className="flex items-center gap-2">
-      <label htmlFor="perPage" className="text-sm text-gray-600">
-        Mostrar:
-      </label>
+      <label htmlFor="perPage" className="text-sm text-gray-600">Mostrar:</label>
       <select
         id="perPage"
         value={productsPerPage}
@@ -333,13 +342,16 @@ const ProductGrid = ({
     </div>
   );
 
+  // ── JSX ───────────────────────────────────────────────────────────────────
+
   return (
     <div className="container mx-auto px-4 py-8 shadow-2xl shadow-black/30">
+
       {/* Filtros */}
       <section className="mb-6 bg-gray-200 rounded-lg shadow-2xl p-4">
         <header className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Filtrar Productos</h2>
-          <button 
+          <button
             onClick={() => setShowFilters(!showFilters)}
             className="md:hidden flex items-center gap-1 text-blue-600"
           >
@@ -356,7 +368,7 @@ const ProductGrid = ({
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <motion.div 
+              <motion.div
                 className="md:col-span-2 relative flex items-center justify-center p-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -382,10 +394,9 @@ const ProductGrid = ({
                   <span>{selectedCategory || 'Todas'}</span>
                   <FaChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
-
                 {isDropdownOpen && (
                   <div className="absolute z-10 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-auto">
-                    <div 
+                    <div
                       onClick={() => selectCategory(null)}
                       className={`p-2 hover:bg-gray-100 cursor-pointer ${!selectedCategory ? 'bg-blue-50' : ''}`}
                     >
@@ -414,8 +425,8 @@ const ProductGrid = ({
                         key={tag}
                         onClick={() => toggleTag(tag)}
                         className={`text-xs px-2 py-1 rounded-full transition-colors ${
-                          selectedTags.includes(tag) 
-                            ? 'bg-blue-600 text-white' 
+                          selectedTags.includes(tag)
+                            ? 'bg-blue-600 text-white'
                             : 'bg-gray-200 hover:bg-gray-300'
                         }`}
                       >
@@ -430,7 +441,7 @@ const ProductGrid = ({
         </AnimatePresence>
       </section>
 
-      {/* Cabecera de Resultados */}
+      {/* Cabecera de resultados */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <p className="text-sm text-gray-600">
@@ -438,7 +449,6 @@ const ProductGrid = ({
           </p>
           <PerPageSelector />
         </div>
-
         <div className="flex items-center gap-2 mt-2 md:mt-0">
           <label htmlFor="sort" className="text-sm text-gray-600">Ordenar por:</label>
           <select
@@ -455,7 +465,7 @@ const ProductGrid = ({
         </div>
       </div>
 
-      {/* Estados */}
+      {/* Estados: cargando / error / lista / vacío */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array(6).fill(0).map((_, i) => <ProductSkeleton key={i} />)}
@@ -469,7 +479,7 @@ const ProductGrid = ({
           {paginatedProducts.map(product => (
             <motion.div
               key={product.id}
-              id={`product-${product.id}`} 
+              id={`product-${product.id}`}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl hover:shadow-black/20 transition-shadow"
               whileHover={{ y: -5 }}
             >
@@ -509,9 +519,7 @@ const ProductGrid = ({
                 {Array.isArray(product.tags) && product.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {product.tags.slice(0, 3).map(tag => (
-                      <span key={tag} className="text-xs bg-gray-100 px-2 py-1 rounded">
-                        {tag}
-                      </span>
+                      <span key={tag} className="text-xs bg-gray-100 px-2 py-1 rounded">{tag}</span>
                     ))}
                   </div>
                 )}
@@ -524,7 +532,7 @@ const ProductGrid = ({
                   >
                     Comprar Ahora
                   </button>
-                </div>  
+                </div>
                 <div className="flex gap-2 mt-4">
                   <button
                     onClick={() => handleOpenDetails(product)}
@@ -567,13 +575,13 @@ const ProductGrid = ({
         </div>
       )}
 
-      {/* Modal de Detalles */}
+      {/* Modal de detalles */}
       <AnimatePresence>
         {selectedProduct && (
-          <ProductDetailModal 
+          <ProductDetailModal
             product={selectedProduct}
             onClose={handleCloseModal}
-            isOpen={!!selectedProduct} 
+            isOpen={!!selectedProduct}
           />
         )}
       </AnimatePresence>
@@ -582,3 +590,4 @@ const ProductGrid = ({
 };
 
 export default ProductGrid;
+

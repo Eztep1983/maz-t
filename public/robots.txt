@@ -1,0 +1,20 @@
+# Tmaz Quality Toners - Robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://tmazqualitytoners.com.co/sitemap.xml
+
+# Crawl-delay (opcional, para evitar sobrecarga)
+Crawl-delay: 1
+
+# Bloquear recursos no importantes
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Permitir acceso a imágenes
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.png$
+Allow: /*.webp$
