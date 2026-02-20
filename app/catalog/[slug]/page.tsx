@@ -1,5 +1,3 @@
-// app/catalog/[slug]/page.tsx
-
 import CatalogWebsite from '@/components/CatalogWebsite';
 import { Suspense } from 'react';
 import Loading from '@/components/Loading';
