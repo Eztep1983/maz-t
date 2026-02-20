@@ -1,19 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // ESLint configuration
   eslint: {
-    // Ignorar eslint durante builds
     ignoreDuringBuilds: true,
   },
 
-  // TypeScript durante build
   typescript: {
-    // No fallar build por errores leves (consistente con eslint)
     ignoreBuildErrors: false,
   },
 
-  // Optimización de imágenes
   images: {
     remotePatterns: [
       {
@@ -38,19 +33,14 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
   },
 
-  // Directorio de build
   distDir: '.next',
 
-  // Compresión
   compress: true,
 
-  // React strict mode
   reactStrictMode: true,
 
-  // Ocultar header "powered by Next.js" por seguridad
   poweredByHeader: false,
 
-  // Headers de seguridad y performance
   async headers() {
     return [
       {
@@ -82,7 +72,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache optimizado para imágenes
       {
         source: '/images/:path*',
         headers: [
@@ -92,7 +81,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache optimizado para assets estáticos
       {
         source: '/_next/static/:path*',
         headers: [
@@ -102,7 +90,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache optimizado para imágenes de Cloudinary
       {
         source: '/cloudinary/:path*',
         headers: [
@@ -115,28 +102,17 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Redirects (descomenta y ajusta según necesites)
-  async redirects() {
-    return [
-      // Ejemplo: Redireccionar www a non-www (o viceversa)
-      // Descomenta si quieres forzar www o non-www
-      // {
-      //   source: '/:path*',
-      //   has: [
-      //     {
-      //       type: 'host',
-      //       value: 'www.tmazqualitytoners.com.co',
-      //     },
-      //   ],
-      //   destination: 'https://tmazqualitytoners.com.co/:path*',
-      //   permanent: true,
-      // },
-    ];
-  },
+async redirects() {
+  return [
+    {
+      source: '/',
+      destination: '/catalog',
+      permanent: true,
+    },
+  ];
+},
 
-  // Webpack optimizations para mejor performance
   webpack: (config, { dev, isServer }) => {
-    // Optimizar bundle size en producción
     if (!dev && !isServer) {
       config.optimization = {
         ...config.optimization,
@@ -145,7 +121,6 @@ const nextConfig: NextConfig = {
           cacheGroups: {
             default: false,
             vendors: false,
-            // Separar React y React-DOM en su propio chunk
             react: {
               name: 'react-vendors',
               chunks: 'all',
@@ -153,7 +128,6 @@ const nextConfig: NextConfig = {
               priority: 40,
               reuseExistingChunk: true,
             },
-            // Separar Framer Motion (animaciones)
             motion: {
               name: 'motion',
               chunks: 'all',
@@ -161,7 +135,6 @@ const nextConfig: NextConfig = {
               priority: 30,
               reuseExistingChunk: true,
             },
-            // React Icons
             icons: {
               name: 'icons',
               chunks: 'all',
@@ -169,7 +142,6 @@ const nextConfig: NextConfig = {
               priority: 25,
               reuseExistingChunk: true,
             },
-            // Librerías comunes compartidas
             commons: {
               name: 'commons',
               chunks: 'all',
@@ -184,11 +156,6 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Experimental features (opcional, descomenta si quieres probar)
-  // experimental: {
-  //   optimisticClientCache: true,
-  //   optimizeCss: true, // Requiere 'critters' package
-  // },
 };
 
 export default nextConfig;
